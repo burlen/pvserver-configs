@@ -1,0 +1,44 @@
+<Servers>
+  <Server name="euclid" resource="csrc://">
+    <CommandStartup>
+      <Options>
+        <Option name="REMOTE_USER" label="user name" save="true">
+          <String default="loring"/>
+        </Option>
+        <Option name="PV_SERVER_PORT" label="local port">
+          <Range type="int" min="1" max="65535" step="1" default="11110" save="true"/>
+        </Option>
+        <Option name="MPI_NP" label="number of processes">
+          <Range type="int" min="1" max="1000000" step="1" default="32" save="true"/>
+        </Option>
+        <Option name="PV_VERSION" label="paraview version">
+          <Enumeration default="3.8.1">
+            <Entry value="3.8.1" label="3.8.1"/>
+            <Entry value="3.10.0" label="3.10.0"/>
+          </Enumeration>
+        </Option>
+        <Option name="SSH_PATH" label="/path/to/plink.exe" save="true">
+          <File default="plink.exe"/>
+        </Option>
+        <Option name="XTERM_PATH" label="/path/to/cmd.exe" save="true">
+          <File default="cmd.exe"/>
+        </Option>
+      </Options>
+      <Command exec="$XTERM_PATH$" timeout="0" delay="0" Arguments="0">
+        <Arguments>
+          <Argument value="/K"/>
+          <Argument value="start"/>
+          <Argument value="$SSH_PATH$"/>
+          <Argument value="-t"/>
+          <Argument value="-R"/>
+          <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
+          <Argument value="$REMOTE_USER$@euclid.nersc.gov"/>
+          <Argument value="/usr/common/graphics/ParaView/start_pvserver.sh"/>
+          <Argument value="$PV_VERSION$"/>
+          <Argument value="$MPI_NP$"/>
+          <Argument value="$PV_SERVER_PORT$"/>
+        </Arguments>
+      </Command>
+    </CommandStartup>
+  </Server>
+</Servers>

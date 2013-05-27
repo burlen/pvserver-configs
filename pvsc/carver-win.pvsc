@@ -1,0 +1,137 @@
+<Servers>
+  <Server name="carver" resource="csrc://">
+    <CommandStartup>
+      <Options>
+        <Option name="REMOTE_USER" label="user name" save="true">
+          <String default=""/>
+        </Option>
+        <Option name="PV_SERVER_PORT" label="tunnel port" save="true">
+          <Range type="int" min="1" max="65535" step="1" default="11111"/>
+        </Option>
+        <Option name="NNODES" label="number of nodes" save="true">
+          <Range type="int" min="1" max="112896" step="1" default="1"/>
+        </Option>
+        <Option name="NCPUS_PER_NODE" label="processes per node" save="true">
+          <Range type="int" min="1" max="8" step="1" default="1"/>
+        </Option>
+        <Option name="WALLTIME" label="job wall time" save="true">
+          <String default="HH:MM:SS"/>
+        </Option>
+        <Option name="PV_PATH" label="paraview version" save="true">
+          <Enumeration default="/usr/common/graphics/ParaView/3.98.1/">
+            <Entry value="/usr/common/graphics/ParaView/3.8.1/"  label="3.8.1" />
+            <Entry value="/usr/common/graphics/ParaView/3.10.0/" label="3.10.0"/>
+            <Entry value="/usr/common/graphics/ParaView/3.12.0/" label="3.12.0"/>
+            <Entry value="/usr/common/graphics/ParaView/3.14.1/" label="3.14.1"/>
+            <Entry value="/usr/common/graphics/ParaView/3.98.0/" label="3.98.0"/>
+            <Entry value="/usr/common/graphics/ParaView/3.98.1/" label="3.98.1"/>
+          </Enumeration>
+        </Option>
+        <Option name="ACCOUNT" label="account" save="true">
+          <String default="default"/>
+        </Option>
+        <Option name="QUEUE" label="queue" save="true">
+          <Enumeration default="interactive">
+            <Entry value="interactive" label="interactive"/>
+            <Entry value="debug" label="debug"/>
+            <Entry value="regular" label="regular"/>
+          </Enumeration>
+        </Option>
+        <Option name="PLINK_PATH" label="plink.exe path" save="true">
+          <File default="plink.exe"/>
+        </Option>
+        <Option name="CMD_PATH" label="cmd.exe path" save="true">
+          <File default="cmd.exe"/>
+        </Option>
+      </Options>
+      <Command exec="$CMD_PATH$" timeout="0" delay="0" Arguments="0">
+        <Arguments>
+          <Argument value="/K"/>
+          <Argument value="start"/>
+          <Argument value="$PLINK_PATH$"/>
+          <Argument value="-t"/>
+          <Argument value="-R"/>
+          <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
+          <Argument value="$REMOTE_USER$@carver.nersc.gov"/>
+          <Argument value="$PV_PATH$/start_pvserver.sh"/>
+          <Argument value="$NNODES$"/>
+          <Argument value="$NCPUS_PER_NODE$"/>
+          <Argument value="$WALLTIME$"/>
+          <Argument value="$ACCOUNT$"/>
+          <Argument value="$QUEUE$"/>
+          <Argument value="$PV_SERVER_PORT$"/>
+        </Arguments>
+      </Command>
+    </CommandStartup>
+  </Server>
+  <Server name="carver-xl-mem" resource="csrc://">
+    <CommandStartup>
+      <Options>
+        <Option name="REMOTE_USER" label="user name" save="true">
+          <String default=""/>
+        </Option>
+        <Option name="PV_SERVER_PORT" label="tunnel port" save="true">
+          <Range type="int" min="1" max="65535" step="1" default="11111"/>
+        </Option>
+        <Option name="NCPUS" label="number of cores" save="true">
+          <Range type="int" min="1" max="32" step="1" default="1"/>
+        </Option>
+        <Option name="WALLTIME" label="job wall time" save="true">
+          <String default="HH:MM:SS"/>
+        </Option>
+        <Option name="PV_PATH" label="paraview version" save="true">
+          <Enumeration default="/usr/common/graphics/ParaView/3.98.1/">
+            <Entry value="/usr/common/graphics/ParaView/3.8.1/"  label="3.8.1" />
+            <Entry value="/usr/common/graphics/ParaView/3.10.0/" label="3.10.0"/>
+            <Entry value="/usr/common/graphics/ParaView/3.12.0/" label="3.12.0"/>
+            <Entry value="/usr/common/graphics/ParaView/3.14.1/" label="3.14.1"/>
+            <Entry value="/usr/common/graphics/ParaView/3.98.0/" label="3.98.0"/>
+            <Entry value="/usr/common/graphics/ParaView/3.98.1/" label="3.98.1"/>
+          </Enumeration>
+        </Option>
+        <Option name="MEM_PER_PROCESS" label="memory per process" save="true">
+          <Enumeration default="16GB">
+            <Entry value="16" label="16GB"/>
+            <Entry value="24" label="24GB"/>
+            <Entry value="32" label="32GB"/>
+            <Entry value="48" label="48GB"/>
+            <Entry value="64" label="64GB"/>
+            <Entry value="96" label="96GB"/>
+            <Entry value="128" label="128GB"/>
+            <Entry value="256" label="256GB"/>
+            <Entry value="512" label="512GB"/>
+            <Entry value="800" label="800GB"/>
+            <Entry value="960" label="960GB"/>
+          </Enumeration>
+        </Option>
+        <Option name="ACCOUNT" label="account" save="true">
+          <String default="default"/>
+        </Option>
+        <Option name="PLINK_PATH" label="plink.exe path" save="true">
+          <File default="plink.exe"/>
+        </Option>
+        <Option name="CMD_PATH" label="cmd.exe path" save="true">
+          <File default="cmd.exe"/>
+        </Option>
+      </Options>
+      <Command exec="$CMD_PATH$" timeout="0" delay="0" Arguments="0">
+        <Arguments>
+          <Argument value="/K"/>
+          <Argument value="start"/>
+          <Argument value="$PLINK_PATH$"/>
+          <Argument value="-t"/>
+          <Argument value="-R"/>
+          <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
+          <Argument value="$REMOTE_USER$@carver.nersc.gov"/>
+          <Argument value="$PV_PATH$/start_pvserver-fat.sh"/>
+          <Argument value="$NCPUS$"/>
+          <Argument value="$MEM_PER_PROCESS$"/>
+          <Argument value="$WALLTIME$"/>
+          <Argument value="$ACCOUNT$"/>
+          <Argument value="$reg_xlmem$"/>
+          <Argument value="$PV_SERVER_PORT$"/>
+        </Arguments>
+      </Command>
+    </CommandStartup>
+  </Server>
+</Servers>

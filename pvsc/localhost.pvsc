@@ -1,0 +1,23 @@
+<Servers>
+  <!-- local -->
+  <Server name="localhost-forward" resource="cs://localhost">
+    <ManualStartup>
+      <Options>
+        <Option name="PV_SERVER_PORT" label="tunnel port">
+          <Range type="int" min="1" max="65535" step="1" default="11111" save="true"/>
+        </Option>
+      </Options>
+    </ManualStartup>
+  </Server>
+
+  <!-- local-rc -->
+  <Server name="localhost-reverse" resource="csrc://localhost">
+    <ManualStartup>
+      <Options>
+        <Option name="PV_SERVER_PORT" label="tunnel port">
+          <Range type="int" min="1" max="65535" step="1" default="11111" save="true"/>
+        </Option>
+      </Options>
+    </ManualStartup>
+  </Server>
+</Servers>

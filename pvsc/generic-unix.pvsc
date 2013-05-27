@@ -1,0 +1,57 @@
+<Servers>
+  <Server name="Generic RC w/ GPU" resource="csrc://">
+    <CommandStartup>
+      <Options>
+        <Option name="SERVER_HOST" label="Server Host" save="true">
+          <String default=""/>
+        </Option>
+        <Option name="REMOTE_USER" label="User Name" save="true">
+          <String default=""/>
+        </Option>
+        <Option name="PV_SERVER_PORT" label="local port">
+          <Range type="int" min="1" max="65535" step="1" default="11110" save="true"/>
+        </Option>
+        <Option name="MPI_ROOT" label="MPI Root">
+          <String default=""/>
+        </Option>
+        <Option name="MPI_NP" label="number of processes">
+          <Range type="int" min="1" max="1000000" step="1" default="4" save="true"/>
+        </Option>
+        <Option name="PV_ROOT" label="ParaView Root">
+          <String default=""/>
+        </Option>
+        <Option name="SSH_PATH" label="SSH Exec" save="true">
+          <File default="/usr/bin/ssh"/>
+        </Option>
+        <Option name="XTERM_PATH" label="XTerm Exec" save="true">
+          <File default="/usr/bin/xterm"/>
+        </Option>
+      </Options>
+      <Command exec="$XTERM_PATH$" timeout="0" delay="0" Arguments="0">
+        <Arguments>
+          <Argument value="-T"/>
+          <Argument value="ParaView Server $REMOTE_USER$@$SERVER_HOST$:$PV_SERVER_PORT$"/>
+          <Argument value="-e"/>
+          <Argument value="$SSH_PATH$"/>
+          <Argument value="-t"/>
+          <Argument value="-R"/>
+          <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
+          <Argument value="$REMOTE_USER$@$SERVER_HOST$"/>
+          <Argument value="DISPLAY=:0"/>
+          <Argument value="xhost"/>
+          <Argument value="+"/>
+          <Argument value=";"/>
+          <Argument value="LD_LIBRARY_PATH=$MPI_ROOT$/lib:$PV_ROOT$/lib/paraview-3.98/:$$LD_LIBRARY_PATH"/>
+          <Argument value="DISPLAY=:0"/>
+          <Argument value="$MPI_ROOT$/bin/mpirun"/>
+          <Argument value="-np"/>
+          <Argument value="$MPI_NP$"/>
+          <Argument value="$PV_ROOT$/bin/pvserver"/>
+          <Argument value="--reverse-connection"/>
+          <Argument value="--server-port=$PV_SERVER_PORT$"/>
+          <Argument value="--client-host=localhost"/>
+        </Arguments>
+      </Command>
+    </CommandStartup>
+  </Server>
+</Servers>
