@@ -1,0 +1,36 @@
+#PBS -S /bin/bash
+#PBS -j eo
+#PBS -V
+
+export CRAY_ROOTFS=DSL
+export MPICH_GNI_DATAGRAM_TIMEOUT=-1
+
+echo "Starting batch jobw..."
+echo $0
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+echo "PATH=$PATH"
+echo "PV_NCAT_PATH=$PV_NCAT_PATH"
+echo "PV_NCPUS=$PV_NCPUS"
+echo "PV_NCPUS_PER_SOCKET=$PV_NCPUS_PER_SOCKET"
+echo "PV_NCPUS_PER_NODE=$PV_NCPUS_PER_NODE"
+#echo "PV_LOGIN_PORT=$PV_LOGIN_PORT"
+echo "PV_LOGIN_HOST=$PV_LOGIN_HOST"
+echo "PV_MOM_PORT=$PV_MOM_PORT"
+echo "PV_MOM_HOST=$PV_MOM_HOST"
+echo "ATP_ENABLED=$ATP_ENABLED"
+echo "CRAY_ROOTFS=$CRAY_ROOTFS"
+echo "MPICH_GNI_DATAGRAM_TIMEOUT=$MPICH_GNI_DATAGRAM_TIMEOUT"
+
+echo "SQTK_EXEC="`which $SQTK_EXEC`
+echo "SQTK_CONFIG=$SQTK_CONFIG"
+echo "SQTK_BOV=$SQTK_BOV"
+echo "SQTK_OUTPUT=$SQTK_OUTPUT"
+echo "SQTK_TIME=$SQTK_TIME"
+
+echo "config..."
+echo "========================================================"
+cat $SQTK_CONFIG
+echo "========================================================"
+
+# start the server
+aprun -n $PV_NCPUS -N $PV_NCPUS_PER_NODE $SQTK_EXEC $SQTK_CONFIG $SQTK_BOV $SQTK_OUTPUT $SQTK_TIME
