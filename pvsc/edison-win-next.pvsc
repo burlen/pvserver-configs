@@ -1,5 +1,5 @@
 <Servers>
-  <Server name="NERSC Edison" resource="csrc://">
+  <Server name="NERSC Edison(next)" resource="csrc://">
     <CommandStartup>
       <Options>
         <Option name="REMOTE_USER" label="user name" save="true">
