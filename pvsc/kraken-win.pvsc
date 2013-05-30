@@ -1,43 +1,53 @@
 <Servers>
-  <Server name="kraken" resource="csrc://">
+  <Server name="NICS Kraken" resource="csrc://">
     <CommandStartup>
       <Options>
         <Option name="REMOTE_USER" label="user name" save="true">
-          <String default="@TG_USER@"/>
+          <String default="USER"/>
         </Option>
         <Option name="PV_SERVER_PORT" label="tunnel port" save="true">
           <Range type="int" min="1" max="65535" step="1" default="11111"/>
         </Option>
         <Option name="NCPUS" label="number of processes" save="true">
-          <Range type="int" min="1" max="112896" step="1" default="1"/>
+          <Range type="int" min="1" max="112896" step="1" default="12"/>
         </Option>
-        <Option name="NCPUS_PER_SOCKET" label="processes per socket" save="true">
-          <Range type="int" min="1" max="6" step="1" default="2"/>
+        <Option name="NCPUS_PER_SOCKET" label="process per socket" save="true">
+          <Range type="int" min="1" max="6" step="1" default="6"/>
+        </Option>
+        <Option name="NRENDER_THREADS" label="number of rendering threads per process" save="true">
+          <Range type="int" min="1" max="32" step="1" default="4"/>
         </Option>
         <Option name="WALLTIME" label="job wall time" save="true">
           <String default="HH:MM:SS"/>
         </Option>
-        <Option name="ACCOUNT" label="teragrid account" save="true">
-          <String default="@TG_ACCOUNT@"/>
+        <!--
+        enumerations are broken in 3.14.0
+        <Option name="PV_VER" label="paraview version" save="true">
+          <String default="3.14.0"/>
         </Option>
-        <Option name="PV_PATH" label="paraview version" save="true">
-          <Enumeration default="/lustre/scratch/proj/sw/paraview/3.10.0/cnl2.2_gnu4.4.4-so/">
-            <Entry value="/lustre/scratch/proj/sw/paraview/3.10.0/cnl2.2_gnu4.4.4-so" label="3.10.0"/>
-            <Entry value="/lustre/scratch/proj/sw/paraview/3.12.0/cnl2.2_gnu4.4.4-so" label="3.12.0"/>
-            <!--
-            <Entry value="/lustre/scratch/proj/sw/paraview/3.14.0/cnl2.2_gnu4.4.4-so" label="3.14.0"/>
-            <Entry value="/lustre/scratch/proj/sw/paraview/3.8.1/cnl2.2_gnu4.4.4-so"  label="3.8.1" />
-            -->
+        -->
+        <!--
+        3.10.0 doesn't provide PV_VERSION_FULL
+        <Option name="PV_VER" label="paraview version" save="true">
+          <Enumeration default="3.14.1">
+            <Entry value="3.10.0" label="3.10.0"/>
+            <Entry value="3.12.0" label="3.12.0"/>
+            <Entry value="3.14.0" label="3.14.1"/>
+            <Entry value="3.14.1" label="3.14.1"/>
           </Enumeration>
         </Option>
-        <Option name="PLINK_PATH" label="plink.exe path" save="true">
-          <File default="/usr/bin/ssh"/>
+        -->
+        <Option name="ACCOUNT" label="account" save="true">
+          <String default="default"/>
         </Option>
-        <Option name="CMD_PATH" label="/cmd.exe path" save="true">
-          <File default="/usr/bin/xterm"/>
-        </Option>
+        <!--
+        enumerations are broken in 3.14.0
         <Option name="QUEUE" label="queue" save="true">
-          <Enumeration default="interactive">
+          <String default="small"/>
+        </Option>
+        -->
+        <Option name="QUEUE" label="queue" save="true">
+          <Enumeration default="small">
             <Entry value="debug" label="debug"/>
             <Entry value="small" label="small"/>
             <Entry value="medium" label="medium"/>
@@ -45,6 +55,12 @@
             <Entry value="capability" label="capability"/>
             <Entry value="dedicated" label="dedicated"/>
           </Enumeration>
+        </Option>
+        <Option name="PLINK_PATH" label="plink.exe path" save="true">
+          <File default="/usr/bin/ssh"/>
+        </Option>
+        <Option name="CMD_PATH" label="/cmd.exe path" save="true">
+          <File default="/usr/bin/xterm"/>
         </Option>
       </Options>
       <Command exec="$CMD_PATH$" timeout="0" delay="0" Arguments="0">
@@ -56,13 +72,19 @@
           <Argument value="-R"/>
           <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
           <Argument value="$REMOTE_USER$@kraken.nics.tennessee.edu"/>
-          <Argument value="$PV_PATH$/start_pvserver.sh"/>
+          <!--
+          3.10.0 doesn't provide PV_VERSION_FULL
+          <Argument value="/lustre/scratch/proj/sw/paraview/$PV_VER$/start_pvserver.sh"/>
+          -->
+          <Argument value="/lustre/scratch/proj/sw/paraview/start_pvserver.sh"/>
           <Argument value="$NCPUS$"/>
           <Argument value="$NCPUS_PER_SOCKET$"/>
+          <Argument value="$NRENDER_THREADS$"/>
           <Argument value="$WALLTIME$"/>
           <Argument value="$ACCOUNT$"/>
           <Argument value="$QUEUE$"/>
           <Argument value="$PV_SERVER_PORT$"/>
+          <Argument value="$PV_VERSION_FULL$"/>
         </Arguments>
       </Command>
     </CommandStartup>
