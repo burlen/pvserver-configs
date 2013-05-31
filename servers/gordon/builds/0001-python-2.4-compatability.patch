@@ -1,0 +1,376 @@
+From 94db6ad0129f538f28b5396fed79747580d1b3ff Mon Sep 17 00:00:00 2001
+From: Burlen Loring <burlen.loring@gmail.com>
+Date: Fri, 31 May 2013 11:10:51 -0700
+Subject: [PATCH] python 2.4 compatability
+
+avoid newer python syntax so that build works
+on systems running python version 2.4/2.5.
+---
+ src/glsl/builtins/tools/generate_builtins.py    |   13 +++++---
+ src/glsl/builtins/tools/texture_builtins.py     |    6 +++-
+ src/glsl/tests/lower_jumps/create_test_cases.py |   24 ++++++++------
+ src/glsl/tests/sexps.py                         |    4 +-
+ src/mapi/glapi/gen/glX_proto_send.py            |   11 ++++--
+ src/mapi/glapi/gen/gl_genexec.py                |   25 ++++++++++++---
+ src/mapi/mapi_abi.py                            |   39 ++++++++++++++++++----
+ src/mesa/main/get_hash_generator.py             |   19 ++++++++++-
+ 8 files changed, 106 insertions(+), 35 deletions(-)
+
+diff --git a/src/glsl/builtins/tools/generate_builtins.py b/src/glsl/builtins/tools/generate_builtins.py
+index 85bd5dd..b9f47dc 100755
+--- a/src/glsl/builtins/tools/generate_builtins.py
++++ b/src/glsl/builtins/tools/generate_builtins.py
+@@ -1,8 +1,6 @@
+ #!/usr/bin/python
+ # -*- coding: utf-8 -*-
+ 
+-from __future__ import with_statement
+-
+ import re
+ import sys
+ from glob import glob
+@@ -26,8 +24,9 @@ compiler = argv[1]
+ def read_ir_files(fs):
+     for filename in glob(path.join(path.join(builtins_dir, 'ir'), '*.ir')):
+         function_name = path.basename(filename).split('.')[0]
+-        with open(filename) as f:
+-            fs[function_name] = f.read()
++        f=open(filename)
++        fs[function_name] = f.read()
++        f.close()
+ 
+ def read_glsl_files(fs):
+     for filename in glob(path.join(path.join(builtins_dir, 'glsl'), '*.glsl')):
+@@ -288,7 +287,11 @@ _mesa_glsl_initialize_functions(struct _mesa_glsl_parse_state *state)
+             if is_es:
+                 version = version[:-2]
+             check += 'state->language_version == ' + version
+-            check += ' && {0}state->es_shader'.format('' if is_es else '!')
++            if (is_es):
++                operatorNot=''
++            else:
++                operatorNot='!'
++            check += ' && %sstate->es_shader'%(operatorNot)
+         else: # an extension name
+             check += 'state->' + version + '_enable'
+ 
+diff --git a/src/glsl/builtins/tools/texture_builtins.py b/src/glsl/builtins/tools/texture_builtins.py
+index 6ef20d5..b11683d 100755
+--- a/src/glsl/builtins/tools/texture_builtins.py
++++ b/src/glsl/builtins/tools/texture_builtins.py
+@@ -82,7 +82,11 @@ def generate_sigs(g, tex_inst, sampler_type, variant = 0, unused_fields = 0):
+     print "     (parameters"
+     print "       (declare (in) " + g + "sampler" + sampler_type + " sampler)",
+     if tex_inst != "txs":
+-        print "\n       (declare (in) " + vec_type("i" if tex_inst in ['txf','txf_ms'] else "", coord_dim + extra_dim) + " P)",
++        if tex_inst in  ['txf','txf_ms']:
++            vecTypeId="i"
++        else:
++            vecTypeId=""
++        print "\n       (declare (in) " + vec_type(vecTypeId, coord_dim + extra_dim) + " P)",
+     if tex_inst == "txl":
+         print "\n       (declare (in) float lod)",
+     elif tex_inst in ['txf', 'txs'] and has_lod(sampler_type):
+diff --git a/src/glsl/tests/lower_jumps/create_test_cases.py b/src/glsl/tests/lower_jumps/create_test_cases.py
+index fbc6f0a..a0c95ed 100644
+--- a/src/glsl/tests/lower_jumps/create_test_cases.py
++++ b/src/glsl/tests/lower_jumps/create_test_cases.py
+@@ -69,7 +69,7 @@ def make_test_case(f_name, ret_type, body):
+ 
+ def const_float(value):
+     """Create an expression representing the given floating point value."""
+-    return ['constant', 'float', ['{0:.6f}'.format(value)]]
++    return ['constant', 'float', ['%.6f'%(value)]]
+ 
+ def const_bool(value):
+     """Create an expression representing the given boolean value.
+@@ -77,7 +77,11 @@ def const_bool(value):
+     If value is not a boolean, it is converted to a boolean.  So, for
+     instance, const_bool(1) is equivalent to const_bool(True).
+     """
+-    return ['constant', 'bool', ['{0}'.format(1 if value else 0)]]
++    if value:
++        retVal=1
++    else:
++        retVal=0
++    return ['constant', 'bool', ['%s'%(retVal)]]
+ 
+ def gt_zero(var_name):
+     """Create Construct the expression var_name > 0"""
+@@ -267,7 +271,7 @@ def bash_quote(*args):
+             if not word:
+                 return "''"
+             return word
+-        return "'{0}'".format(word.replace("'", "'\"'\"'"))
++        return "'%s'"%(word.replace("'", "'\"'\"'"))
+     return ' '.join(quote_word(word) for word in args)
+ 
+ def create_test_case(doc_string, input_sexp, expected_sexp, test_name,
+@@ -278,27 +282,27 @@ def create_test_case(doc_string, input_sexp, expected_sexp, test_name,
+     the given code in the expected way.
+     """
+     doc_lines = [line.strip() for line in doc_string.splitlines()]
+-    doc_string = ''.join('# {0}\n'.format(line) for line in doc_lines if line != '')
++    doc_string = ''.join('# %s\n'%(line) for line in doc_lines if line != '')
+     check_sexp(input_sexp)
+     check_sexp(expected_sexp)
+     input_str = sexp_to_string(sort_decls(input_sexp))
+     expected_output = sexp_to_string(sort_decls(expected_sexp))
+ 
+     optimization = (
+-        'do_lower_jumps({0:d}, {1:d}, {2:d}, {3:d}, {4:d})'.format(
++        'do_lower_jumps(%d, %d, %d, %d, %d)'%(
+             pull_out_jumps, lower_sub_return, lower_main_return,
+             lower_continue, lower_break))
+     args = ['../../glsl_test', 'optpass', '--quiet', '--input-ir', optimization]
+-    test_file = '{0}.opt_test'.format(test_name)
++    test_file = '%s.opt_test'%(test_name)
+     with open(test_file, 'w') as f:
+         f.write('#!/bin/bash\n#\n# This file was generated by create_test_cases.py.\n#\n')
+         f.write(doc_string)
+-        f.write('{0} <<EOF\n'.format(bash_quote(*args)))
+-        f.write('{0}\nEOF\n'.format(input_str))
++        f.write('%s <<EOF\n'%(bash_quote(*args)))
++        f.write('%s\nEOF\n'%(input_str))
+     os.chmod(test_file, 0774)
+-    expected_file = '{0}.opt_test.expected'.format(test_name)
++    expected_file = '%s.opt_test.expected'%(test_name)
+     with open(expected_file, 'w') as f:
+-        f.write('{0}\n'.format(expected_output))
++        f.write('%s\n'%(expected_output))
+ 
+ def test_lower_returns_main():
+     doc_string = """Test that do_lower_jumps respects the lower_main_return
+diff --git a/src/glsl/tests/sexps.py b/src/glsl/tests/sexps.py
+index a714af8..66489a0 100644
+--- a/src/glsl/tests/sexps.py
++++ b/src/glsl/tests/sexps.py
+@@ -40,7 +40,7 @@ def check_sexp(sexp):
+         for s in sexp:
+             check_sexp(s)
+     elif not isinstance(sexp, basestring):
+-        raise Exception('Not a sexp: {0!r}'.format(sexp))
++        raise Exception('Not a sexp: %s'%(repr(sexp)))
+ 
+ def parse_sexp(sexp):
+     """Convert a string, of the form that would be output by mesa,
+@@ -83,7 +83,7 @@ def sexp_to_string(sexp):
+             result += ' ' + sub_result
+         else:
+             result += '\n' + sub_result
+-    return '({0})'.format(result.replace('\n', '\n '))
++    return '(%s)'%(result.replace('\n', '\n '))
+ 
+ def sort_decls(sexp):
+     """Sort all toplevel variable declarations in sexp.
+diff --git a/src/mapi/glapi/gen/glX_proto_send.py b/src/mapi/glapi/gen/glX_proto_send.py
+index f4d519f..373957f 100644
+--- a/src/mapi/glapi/gen/glX_proto_send.py
++++ b/src/mapi/glapi/gen/glX_proto_send.py
+@@ -369,7 +369,10 @@ static const struct proc_pair
+         names = procs.keys()
+         names.sort()
+         for i in xrange(len(names)):
+-            comma = ',' if i < len(names) - 1 else ''
++            if (i < len(names) - 1):
++                comma = ','
++            else:
++                comma = ''
+             print '   { "%s", (_glapi_proc) gl%s }%s' % (names[i], procs[names[i]], comma)
+         print """};
+ 
+@@ -1001,11 +1004,11 @@ struct _glapi_table * __glXNewIndirectAPI( void )
+                         preamble = None
+ 
+                     if func.is_abi():
+-                        print '    table[{offset}] = (_glapi_proc) __indirect_gl{name};'.format(name = func.name, offset = func.offset)
++                        print '    table[%s] = (_glapi_proc) __indirect_gl%s;'%(func.offset, func.name)
+                     else:
+-                        print '    o = _glapi_get_proc_offset("gl{0}");'.format(func.name)
++                        print '    o = _glapi_get_proc_offset("gl%s");'%(func.name)
+                         print '    assert(o > 0);'
+-                        print '    table[o] = (_glapi_proc) __indirect_gl{0};'.format(func.name)
++                        print '    table[o] = (_glapi_proc) __indirect_gl%s;'%(func.name)
+ 
+         return
+ 
+diff --git a/src/mapi/glapi/gen/gl_genexec.py b/src/mapi/glapi/gen/gl_genexec.py
+index e91d4e9..e4600b9 100644
+--- a/src/mapi/glapi/gen/gl_genexec.py
++++ b/src/mapi/glapi/gen/gl_genexec.py
+@@ -30,6 +30,21 @@ import license
+ import gl_XML
+ import sys, getopt
+ 
++try:
++    from collections import defaultdict
++except ImportError:
++    class defaultdict(dict):
++        def __init__(self, default_factory=None, *a, **kw):
++            dict.__init__(self, *a, **kw)
++            self.default_factory = default_factory
++        def __getitem__(self, key):
++            try:
++                return dict.__getitem__(self, key)
++            except KeyError:
++                return self.__missing__(key)
++        def __missing__(self, key):
++            self[key] = value = self.default_factory()
++            return value
+ 
+ exec_flavor_map = {
+     'dynamic': None,
+@@ -158,11 +173,11 @@ class PrintCode(gl_XML.gl_print_base):
+     def printBody(self, api):
+         # Collect SET_* calls by the condition under which they should
+         # be called.
+-        settings_by_condition = collections.defaultdict(lambda: [])
++        settings_by_condition = defaultdict(lambda: [])
+         for f in api.functionIterateAll():
+             if f.exec_flavor not in exec_flavor_map:
+                 raise Exception(
+-                    'Unrecognized exec flavor {0!r}'.format(f.exec_flavor))
++                    'Unrecognized exec flavor %s'%(repr(f.exec_flavor)))
+             condition_parts = []
+             if f.desktop:
+                 if f.deprecated:
+@@ -186,13 +201,13 @@ class PrintCode(gl_XML.gl_print_base):
+                 # dynamically.
+                 continue
+             settings_by_condition[condition].append(
+-                'SET_{0}(exec, {1}{0});'.format(f.name, prefix, f.name))
++                'SET_%s(exec, %s%s);'%(f.name, prefix, f.name))
+         # Print out an if statement for each unique condition, with
+         # the SET_* calls nested inside it.
+         for condition in sorted(settings_by_condition.keys()):
+-            print '   if ({0}) {{'.format(condition)
++            print '   if (%s) {'%(condition)
+             for setting in sorted(settings_by_condition[condition]):
+-                print '      {0}'.format(setting)
++                print '      %s'%(setting)
+             print '   }'
+ 
+ 
+diff --git a/src/mapi/mapi_abi.py b/src/mapi/mapi_abi.py
+index 6bfcfa9..936f135 100644
+--- a/src/mapi/mapi_abi.py
++++ b/src/mapi/mapi_abi.py
+@@ -70,8 +70,14 @@ class ABIEntry(object):
+         """Return the parameter list used in the entry prototype."""
+         c_params = []
+         for t, n, a in self.params:
+-            sep = '' if t.endswith('*') else ' '
+-            arr = '[%d]' % a if a else ''
++            if t.endswith('*'):
++                sep = ''
++            else:
++                sep = ' '
++            if a:
++                arr = '[%d]' % a
++            else:
++                arr = ''
+             c_params.append(t + sep + n + arr)
+         if not c_params:
+             c_params.append('void')
+@@ -114,7 +120,10 @@ class ABIEntry(object):
+         c_type = m.group('type').strip()
+         c_name = m.group('name')
+         c_array = m.group('array')
+-        c_array = int(c_array) if c_array else 0
++        if c_array:
++            c_array = int(c_array)
++        else:
++            c_array = 0  
+ 
+         return (c_type, c_name, c_array)
+ 
+@@ -147,10 +156,15 @@ def abi_parse_xml(xml):
+         entry_points.insert(0, func.name)
+ 
+         for name in entry_points:
++            if (name == func.name):
++                alias = None
++            else:
++                alias = func.name
++
+             attrs = {
+                     'slot': func.offset,
+                     'hidden': not func.is_static_entry_point(name),
+-                    'alias': None if name == func.name else func.name,
++                    'alias': alias,
+                     'handcode': bool(func.has_different_protocol(name)),
+             }
+ 
+@@ -217,7 +231,12 @@ def abi_parse_line(line):
+ 
+ def abi_parse(filename):
+     """Parse a CSV file for ABI entries."""
+-    fp = open(filename) if filename != '-' else sys.stdin
++    #fp = open(filename) if filename != '-' else sys.stdin
++    if (filename != '-'):
++        fp = fopen(filename)
++    else:
++        fp = sys.stdin
++
+     lines = [line.strip() for line in fp.readlines()
+             if not line.startswith('#') and line.strip()]
+ 
+@@ -336,7 +355,10 @@ class ABIPrinter(object):
+         for ent in self.entries:
+             if not self.need_entry_point(ent):
+                 continue
+-            export = self.api_call if not ent.hidden else ''
++            if (not ent.hidden):
++                export = self.api_call
++            else:
++                export = ''
+             decls.append(self._c_decl(ent, prefix, True, export) + ';')
+ 
+         return "\n".join(decls)
+@@ -430,7 +452,10 @@ class ABIPrinter(object):
+             if not self.need_entry_point(ent):
+                 continue
+ 
+-            export = self.api_call if not ent.hidden else ''
++            if (not ent.hidden):
++                export = self.api_call
++            else:
++                export = ''
+ 
+             proto = self._c_decl(ent, prefix, True, export)
+             cast = self._c_cast(ent)
+diff --git a/src/mesa/main/get_hash_generator.py b/src/mesa/main/get_hash_generator.py
+index 96bc495..a315814 100644
+--- a/src/mesa/main/get_hash_generator.py
++++ b/src/mesa/main/get_hash_generator.py
+@@ -30,9 +30,26 @@
+ # names for each GL API. The generated file is to be included by glGet.c
+ 
+ import os, sys, imp, getopt
+-from collections import defaultdict
+ import get_hash_params
+ 
++try:
++    from collections import defaultdict
++except ImportError:
++    class defaultdict(dict):
++        def __init__(self, default_factory=None, *a, **kw):
++            dict.__init__(self, *a, **kw)
++            self.default_factory = default_factory
++        def __getitem__(self, key):
++            try:
++                return dict.__getitem__(self, key)
++            except KeyError:
++                return self.__missing__(key)
++        def __missing__(self, key):
++            self[key] = value = self.default_factory()
++            return value
++
++
++
+ cur_dir = os.path.dirname(sys.argv[0])
+ param_desc_file = "%s/get_hash_params.py" % cur_dir
+ 
+-- 
+1.7.8.2
+
