@@ -16,6 +16,10 @@ JERRF=$2
 # make sure the job is deleted, if this window closes.
 trap "{ qdel $JID; exit 0;  }" EXIT
 
+echo
+qstat $JID
+echo
+
 # keep the shell open
 while :
 do
