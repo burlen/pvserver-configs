@@ -12,7 +12,7 @@
           <Range type="int" min="1" max="153216" step="1" default="16"/>
         </Option>
         <Option name="NCPUS_PER_SOCKET" label="process per socket" save="true">
-          <Range type="int" min="1" max="8" step="1" default="6"/>
+          <Range type="int" min="1" max="8" step="1" default="8"/>
         </Option>
         <Option name="NRENDER_THREADS" label="number of rendering threads per process" save="true">
           <Range type="int" min="1" max="32" step="1" default="4"/>
@@ -52,25 +52,27 @@
             <Entry value="regular" label="regular"/>
           </Enumeration>
         </Option>
-
-        <!-- windows only -->
-        <Option name="SSH_PATH" label="/path/to/plink.exe" save="true">
-          <File default="plink.exe"/>
+        <Option name="SSH_PATH" label="/path/to/ssh" save="true">
+          <File default="/usr/bin/ssh"/>
         </Option>
-        <Option name="XTERM_PATH" label="/path/to/cmd.exe" save="true">
-          <File default="cmd.exe"/>
+        <Option name="XTERM_PATH" label="/path/to/xterm" save="true">
+          <File default="/usr/bin/xterm"/>
         </Option>
-
       </Options>
       <Command exec="$XTERM_PATH$" timeout="0" delay="0" Arguments="0">
         <Arguments>
-          <Argument value="/K"/>
-          <Argument value="start"/>
+          <Argument value="-T"/>
+          <Argument value="ParaView $REMOTE_USER$@edison"/>
+          <Argument value="-e"/>
           <Argument value="$SSH_PATH$"/>
           <Argument value="-t"/>
           <Argument value="-R"/>
           <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
           <Argument value="$REMOTE_USER$@edison.nersc.gov"/>
+          <!--
+          3.10.0 doesn't provide PV_VERSION_FULL
+          <Argument value="/usr/common/graphics/ParaView/$PV_VER$-mom-so/start_pvserver.sh"/>
+          -->
           <Argument value="/usr/common/graphics/ParaView/next/start_pvserver.sh"/>
           <Argument value="$NCPUS$"/>
           <Argument value="$NCPUS_PER_SOCKET$"/>
