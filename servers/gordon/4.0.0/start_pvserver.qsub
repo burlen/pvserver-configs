@@ -1,0 +1,25 @@
+#PBS -S /bin/bash
+#PBS -j eo
+#PBS -V
+
+export LD_LIBRARY_PATH=$PV_LD_LIBRARY_PATH
+export PATH=$PV_PATH
+
+echo "Starting ParaView..."
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+echo "PATH=$PATH"
+echo "PV_NCAT_PATH=$PV_NCAT_PATH"
+echo "PV_NCPUS=$PV_NCPUS"
+echo "PV_NCPUS_PER_NODE=$PV_NCPUS_PER_NODE"
+echo "PV_LOGIN_PORT=$PV_LOGIN_PORT"
+echo "PV_RENDER_THREADS=$PV_RENDER_THREADS"
+echo "PV_LOGIN_HOST=$PV_LOGIN_HOST"
+echo "PV_MOM_PORT=$PV_MOM_PORT"
+echo "PV_MOM_HOST=$PV_MOM_HOST"
+echo "ATP_ENABLED=$ATP_ENABLED"
+echo "CRAY_ROOTFS=$CRAY_ROOTFS"
+
+export LP_NUM_THREADS=$PV_RENDER_THREADS
+
+# start the server
+mpiexec -n $PV_NCPUS pvserver --reverse-connection --use-offscreen-rendering --server-port=$PV_LOGIN_PORT --client-host=$PV_LOGIN_HOST

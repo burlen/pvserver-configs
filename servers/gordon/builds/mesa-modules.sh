@@ -16,7 +16,9 @@ export AUTOM4TE_CFG=`pwd`/autom4te.cfg
 export AC_PROG_LIBTOOL=/opt/gnu/libtool/2.4/bin/libtool
 export ACLOCAL="aclocal --system-acdir=/opt/gnu/automake/1.11.5/share/aclocal-1.11/ -I /opt/gnu/libtool/2.4/share/aclocal/ -I /usr/share/aclocal/ -I /opt/gnu/automake/1.11.5/share/aclocal-1.11/"
 
+prefix=/oasis/projects/nsf/gue998/bloring/installs
+
 libtool=/opt/gnu/libtool/2.4/
-bison=/home/bloring/installs/bison/2.7/
-flex=/home/bloring/installs/flex/2.5.37/
+bison=$prefix/bison/2.7/
+flex=$prefix/flex/2.5.37/
 export PATH=$libtool/bin:$bison/bin/:$flex/bin/:$PATH
