@@ -3,6 +3,10 @@
 if [ $# != 7 ]
 then
   echo "expected 7 argumnets but got $#"
+  echo
+  echo "You may need to update your server config (pvsc) files. The latest "
+  echo "server config may be found at: https://www.nersc.gov/users/software/vis-analytics/paraview"
+  echo
   echo "args:"
   echo $*
   echo
