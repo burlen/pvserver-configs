@@ -2,10 +2,10 @@
 
 if [ $# != 2 ]
 then
+  echo "Usage: start_pvserver.sh JID JERRF"
   echo
-  echo "Error: invalid number of arguments"
-  echo
-  echo "Usage: batchsys_mon job_id job_err_file"
+  echo "JID -- job id retruned from qsub"
+  echo "JEERF -- full path to stderr file"
   echo
   sleep 1d
 fi
@@ -13,12 +13,16 @@ fi
 JID=$1
 JERRF=$2
 
+echo "Starting batch job monitor..."
+echo "JID=$JID"
+echo "JERRF=$JERRF"
+echo
+qstat -G $JID
+echo
+
 # make sure the job is deleted, if this window closes.
 trap "{ qdel $JID; exit 0;  }" EXIT
 
-echo
-qstat $JID
-echo
 
 # keep the shell open
 while :
@@ -36,20 +40,21 @@ do
       echo "    d - delete job $JID."
       echo "    q - quit, and delete job $JID."
       echo "    p - pages job $JID's stderr/stdout stream."
-      echo "    l - ls job $JID's stderr/stdout file."
       echo "    h - print help message."
       echo
       ;;
 
     P|p)
       echo
-      less $JERRF
-      echo
-      ;;
-
-    L|l)
-      echo
-      ls -lah $JERRF
+      if [ -e  $JERRF ]
+      then
+        less $JERRF
+      elif [ -e ~/$JID.ER ]
+      then
+        less  ~/$JID.ER
+      else
+        echo "Job output is not yet available."
+      fi
       echo
       ;;
 
@@ -79,7 +84,7 @@ do
 
     U|u)
       echo
-      qstat $JID
+      qstat -G $JID
       echo
       ;;
 
@@ -90,3 +95,6 @@ do
       ;;
    esac
 done
+
+
+

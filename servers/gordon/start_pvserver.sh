@@ -8,8 +8,8 @@ then
   echo
   echo "Usage: start_pvserver.sh"
   echo
-  echo "  NCPUS     - number of processes in mutiple of 32."
-  echo "  NCPUS_PER_SOCKET - number of processes per socket. 2 sockets per node."
+  echo "  NCPUS     - number of processes in mutiple of 16."
+  echo "  NCPUS_PER_NODE - number of processes per socket. 2 sockets per node."
   echo "  NRENDER_THREADS - number of rendering threads per process."
   echo "  WALLTIME  - wall time in HH:MM:SS format."
   echo "  ACCOUNT   - account name to run the job against."
@@ -21,21 +21,22 @@ then
   echo
   sleep 1d
 fi
+export NERSC_HOST=hopper
 
 NCPUS=$1
-NCPUS_PER_SOCKET=$2
+NCPUS_PER_NODE=$2
 NRENDER_THREADS=$3
 WALLTIME=$4
 ACCOUNT=$5
 QUEUE=$6
 PORT=$7
-PV_VER=$8
+PV_VER=`echo $8 | cut -d- -f1`
 
-PV_PREFIX=/lustre/scratch/proj/sw/paraview/
+PREFIX=/oasis/projects/nsf/gue998/bloring/installs/
 
-if [[ ! (-e $PV_PREFIX/$PV_VER/cnl3.1_gnu4.6.1-so/start_pvserver.sh) ]]
+if [[ ! (-e $PREFIX/ParaView/$PV_VER/start_pvserver.sh) ]]
 then
-  PV_INSTALLS="3.98.0"
+  PV_INSTALLS=`ls -1 | grep '^[34]\.[0-9]\.[0-9]'`
 
   echo
   echo\
@@ -44,13 +45,11 @@ then
     "for one of the following installed versions from www.paraview.org "\
     "and try again."
   echo
-  echo "ParaView versions installed on this system are:"
-  echo
   echo $PV_INSTALLS
   echo
 
   sleep 1d
 fi
 
-$PV_PREFIX/$PV_VER/cnl3.1_gnu4.6.1-so/start_pvserver.sh $NCPUS $NCPUS_PER_SOCKET $NRENDER_THREADS $WALLTIME $ACCOUNT $QUEUE $PORT
+$PREFIX/ParaView/$PV_VER/start_pvserver.sh $NCPUS $NCPUS_PER_NODE $NRENDER_THREADS $WALLTIME $ACCOUNT $QUEUE $PORT
 sleep 1d

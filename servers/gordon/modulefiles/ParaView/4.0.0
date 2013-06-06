@@ -1,0 +1,26 @@
+#%Module1.0#####################################################################
+##
+
+if {[is-loaded intel/2011]} { module unload intel }
+if {![is-loaded gnu/4.6.1]} { module load gnu/4.6.1 }
+if {![is-loaded mesa/9.2.0]} { module load mesa/9.2.0 }
+if {![is-loaded python/2.7.3]} { module load python/2.7.3 }
+if {![is-loaded cmake/2.8.11]} { module load cmake/2.8.11 }
+if {![is-loaded openmpi_ib/1.4.1]} { module load openmpi_ib/1.4.1 }
+
+set pkg_name ParaView
+set pkg_version 4.0.0
+set	pkg_home /oasis/projects/nsf/gue998/bloring/installs/$pkg_name/$pkg_version
+set pkg_description "ParaView -- interactive parallel scientific data visualization"
+
+proc ModulesHelp { } {
+	global pkg_name
+  global pkg_version
+
+	puts stderr "module for $pkg_name $pkg_version\n"
+}
+
+module-whatis "$pkg_description"
+
+prepend-path LD_LIBRARY_PATH $pkg_home/lib
+prepend-path PATH $pkg_home/bin

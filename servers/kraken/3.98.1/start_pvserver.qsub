@@ -1,40 +1,28 @@
 #PBS -S /bin/bash
 #PBS -j eo
-#PBS -V
 
-PV_MOM_HOST=`/bin/hostname`
+cd $PBS_O_WORKDIR
 
-# extend the tunnel from the mom to the login
-ssh -o StrictHostKeyChecking=no -N -L $PV_PORT:localhost:$PV_PORT $PV_LOGIN_HOST &
-SSH_PID=$!
-# close the tunnel when this shell exits
-trap "{ kill -SIGTERM $SSH_PID; exit 0;  }" EXIT
-echo "Tunneling from $PV_MOM_HOST to $PV_LOGIN_HOST on $PV_PORT"
-
-
-# create the ncat forward
-let PV_MOM_PORT=$PV_PORT+1
-$PV_NCAT_PATH/ncat -l $PV_MOM_PORT --sh-exec="$PV_NCAT_PATH/ncat localhost $PV_PORT" &
-echo "Forwarding port $MOM_PORT to $PV_PORT on $MOM_HOST"
-
-export CRAY_ROOTFS=DSL
-
+echo
 echo "Starting ParaView..."
-echo $0
+echo 
+
+export LD_LIBRARY_PATH=$PV_LD_LIBRARY_PATH
+export PATH=$PV_PATH
+#export PYTHONPATH=$PV_PYTHONPATH
+export PYTHONHOME=$PV_PYTHONHOME
+
+echo "PBS_O_WORKDIR=$PBS_O_WORKDIR"
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 echo "PATH=$PATH"
-echo "PV_NCAT_PATH=$PV_NCAT_PATH"
+echo "PYTHONHOME=$PYTHONHOME"
+echo "PYTHONPATH=$PYTHONPATH"
 echo "PV_NCPUS=$PV_NCPUS"
 echo "PV_NCPUS_PER_SOCKET=$PV_NCPUS_PER_SOCKET"
-#echo "PV_LOGIN_PORT=$PV_LOGIN_PORT"
-echo "PV_RENDER_THREADS=$PV_RENDER_THREADS"
+echo "PV_LOGIN_PORT=$PV_LOGIN_PORT"
 echo "PV_LOGIN_HOST=$PV_LOGIN_HOST"
-echo "PV_MOM_PORT=$PV_MOM_PORT"
-echo "PV_MOM_HOST=$PV_MOM_HOST"
-echo "ATP_ENABLED=$ATP_ENABLED"
-echo "CRAY_ROOTFS=$CRAY_ROOTFS"
 
-export LP_NUM_THREADS=$PV_RENDER_THREADS
 
-# start the server
-aprun -n $PV_NCPUS -S $PV_NCPUS_PER_SOCKET pvserver --reverse-connection --use-offscreen-rendering --server-port=$PV_MOM_PORT --client-host=$PV_MOM_HOST
+aprun -n $PV_NCPUS -S $PV_NCPUS_PER_SOCKET pvserver --reverse-connection --use-offscreen-rendering --server-port=$PV_LOGIN_PORT --client-host=$PV_LOGIN_HOST
+
+echo "aprun pvserver exited with code $?."

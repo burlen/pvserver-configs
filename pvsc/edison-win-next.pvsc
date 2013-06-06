@@ -71,7 +71,7 @@
           <Argument value="-R"/>
           <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
           <Argument value="$REMOTE_USER$@edison.nersc.gov"/>
-	  <Argument value="/usr/common/graphics/ParaView/next/start_pvserver.sh"/>
+          <Argument value="/usr/common/graphics/ParaView/next/start_pvserver.sh"/>
           <Argument value="$NCPUS$"/>
           <Argument value="$NCPUS_PER_SOCKET$"/>
           <Argument value="$NRENDER_THREADS$"/>

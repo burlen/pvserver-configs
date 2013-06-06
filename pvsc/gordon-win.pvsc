@@ -1,5 +1,5 @@
 <Servers>
-  <Server name="NICS Kraken" resource="csrc://">
+  <Server name="SDSC Gordon" resource="csrc://">
     <CommandStartup>
       <Options>
         <Option name="REMOTE_USER" label="user name" save="true">
@@ -9,10 +9,10 @@
           <Range type="int" min="1" max="65535" step="1" default="11111"/>
         </Option>
         <Option name="NCPUS" label="number of processes" save="true">
-          <Range type="int" min="1" max="112896" step="1" default="12"/>
+          <Range type="int" min="1" max="16384" step="1" default="8"/>
         </Option>
-        <Option name="NCPUS_PER_SOCKET" label="process per socket" save="true">
-          <Range type="int" min="1" max="6" step="1" default="6"/>
+        <Option name="NCPUS_PER_NODE" label="process per socket" save="true">
+          <Range type="int" min="1" max="16" step="1" default="8"/>
         </Option>
         <Option name="NRENDER_THREADS" label="number of rendering threads per process" save="true">
           <Range type="int" min="1" max="32" step="1" default="4"/>
@@ -43,42 +43,37 @@
         <!--
         enumerations are broken in 3.14.0
         <Option name="QUEUE" label="queue" save="true">
-          <String default="small"/>
+          <String default="interactive"/>
         </Option>
         -->
         <Option name="QUEUE" label="queue" save="true">
-          <Enumeration default="small">
+          <Enumeration default="regular">
             <Entry value="debug" label="debug"/>
-            <Entry value="small" label="small"/>
-            <Entry value="medium" label="medium"/>
-            <Entry value="large" label="large"/>
-            <Entry value="capability" label="capability"/>
-            <Entry value="dedicated" label="dedicated"/>
+            <Entry value="regular" label="regular"/>
           </Enumeration>
         </Option>
-        <Option name="PLINK_PATH" label="plink.exe path" save="true">
-          <File default="/usr/bin/ssh"/>
+
+        <!-- windows only -->
+        <Option name="SSH_PATH" label="/path/to/plink.exe" save="true">
+          <File default="plink.exe"/>
         </Option>
-        <Option name="CMD_PATH" label="/cmd.exe path" save="true">
-          <File default="/usr/bin/xterm"/>
+        <Option name="XTERM_PATH" label="/path/to/cmd.exe" save="true">
+          <File default="cmd.exe"/>
         </Option>
+
       </Options>
-      <Command exec="$CMD_PATH$" timeout="0" delay="0" Arguments="0">
+      <Command exec="$XTERM_PATH$" timeout="0" delay="0" Arguments="0">
         <Arguments>
           <Argument value="/K"/>
           <Argument value="start"/>
-          <Argument value="$PLINK_PATH$"/>
+          <Argument value="$SSH_PATH$"/>
           <Argument value="-t"/>
           <Argument value="-R"/>
           <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
-          <Argument value="$REMOTE_USER$@kraken.nics.tennessee.edu"/>
-          <!--
-          3.10.0 doesn't provide PV_VERSION_FULL
-          <Argument value="/lustre/scratch/proj/sw/paraview/$PV_VER$/start_pvserver.sh"/>
-          -->
-          <Argument value="/lustre/scratch/proj/sw/paraview/start_pvserver.sh"/>
+          <Argument value="$REMOTE_USER$@gordon.sdsc.edu"/>
+          <Argument value="/oasis/projects/nsf/gue998/bloring/installs/ParaView/start_pvserver.sh"/>
           <Argument value="$NCPUS$"/>
-          <Argument value="$NCPUS_PER_SOCKET$"/>
+          <Argument value="$NCPUS_PER_NODE$"/>
           <Argument value="$NRENDER_THREADS$"/>
           <Argument value="$WALLTIME$"/>
           <Argument value="$ACCOUNT$"/>
@@ -90,3 +85,4 @@
     </CommandStartup>
   </Server>
 </Servers>
+
