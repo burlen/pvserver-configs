@@ -1,0 +1,19 @@
+#PBS -S /bin/bash
+#PBS -j eo
+#PBS -V
+
+export LD_LIBRARY_PATH=$PV_LD_LIBRARY_PATH
+export PATH=$PV_PATH
+
+echo "Starting ParaView..."
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+echo "PATH=$PATH"
+echo "PV_NCPUS=$PV_NCPUS"
+echo "PV_NCPUS_PER_NODE=$PV_NCPUS_PER_NODE"
+echo "PV_RENDER_THREADS=$PV_RENDER_THREADS"
+echo "PV_BATCH_SCRIPT=$PV_BATCH_SCRIPT"
+
+export LP_NUM_THREADS=$PV_RENDER_THREADS
+
+# start the server
+mpiexec -n $PV_NCPUS pvbatch $PV_BATCH_SCRIPT

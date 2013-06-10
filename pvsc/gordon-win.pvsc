@@ -1,5 +1,5 @@
 <Servers>
-  <Server name="NERSC Edison(next)" resource="csrc://">
+  <Server name="SDSC Gordon" resource="csrc://">
     <CommandStartup>
       <Options>
         <Option name="REMOTE_USER" label="user name" save="true">
@@ -9,10 +9,10 @@
           <Range type="int" min="1" max="65535" step="1" default="11111"/>
         </Option>
         <Option name="NCPUS" label="number of processes" save="true">
-          <Range type="int" min="1" max="153216" step="1" default="16"/>
+          <Range type="int" min="1" max="16384" step="1" default="8"/>
         </Option>
-        <Option name="NCPUS_PER_SOCKET" label="process per socket" save="true">
-          <Range type="int" min="1" max="8" step="1" default="6"/>
+        <Option name="NCPUS_PER_NODE" label="process per socket" save="true">
+          <Range type="int" min="1" max="16" step="1" default="8"/>
         </Option>
         <Option name="NRENDER_THREADS" label="number of rendering threads per process" save="true">
           <Range type="int" min="1" max="32" step="1" default="4"/>
@@ -70,17 +70,19 @@
           <Argument value="-t"/>
           <Argument value="-R"/>
           <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
-          <Argument value="$REMOTE_USER$@edison.nersc.gov"/>
-          <Argument value="/usr/common/graphics/ParaView/next/start_pvserver.sh"/>
+          <Argument value="$REMOTE_USER$@gordon.sdsc.edu"/>
+          <Argument value="/oasis/projects/nsf/gue998/bloring/installs/ParaView/start_pvserver.sh"/>
           <Argument value="$NCPUS$"/>
-          <Argument value="$NCPUS_PER_SOCKET$"/>
+          <Argument value="$NCPUS_PER_NODE$"/>
           <Argument value="$NRENDER_THREADS$"/>
           <Argument value="$WALLTIME$"/>
           <Argument value="$ACCOUNT$"/>
           <Argument value="$QUEUE$"/>
           <Argument value="$PV_SERVER_PORT$"/>
+          <Argument value="$PV_VERSION_FULL$"/>
         </Arguments>
       </Command>
     </CommandStartup>
   </Server>
 </Servers>
+

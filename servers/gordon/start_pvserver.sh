@@ -1,19 +1,16 @@
 #!/bin/bash
 
-if [ $# != 7 ]
+if [ $# != 8 ]
 then
-  echo "expected 7 argumnets but got $#"
-  echo
-  echo "You may need to update your server config (pvsc) files. The latest "
-  echo "server config may be found at: https://www.nersc.gov/users/software/vis-analytics/paraview"
-  echo
+  echo "expected 8 argumnets but got $#"
   echo "args:"
   echo $*
   echo
   echo "Usage: start_pvserver.sh"
   echo
-  echo "  NCPUS     - number of processes in mutiple of 24."
-  echo "  NCPUS_PER_SOCKET - number of processes per socket. 4 sockets per node."
+  echo "  NCPUS     - number of processes in mutiple of 16."
+  echo "  NCPUS_PER_NODE - number of processes per socket. 2 sockets per node."
+  echo "  NRENDER_THREADS - number of rendering threads per process."
   echo "  WALLTIME  - wall time in HH:MM:SS format."
   echo "  ACCOUNT   - account name to run the job against."
   echo "  QUEUE     - the queue to use."
@@ -27,16 +24,19 @@ fi
 export NERSC_HOST=hopper
 
 NCPUS=$1
-NCPUS_PER_SOCKET=$2
-WALLTIME=$3
-ACCOUNT=$4
-QUEUE=$5
-PORT=$6
-PV_VER=$7
+NCPUS_PER_NODE=$2
+NRENDER_THREADS=$3
+WALLTIME=$4
+ACCOUNT=$5
+QUEUE=$6
+PORT=$7
+PV_VER=`echo $8 | cut -d- -f1`
 
-if [[ ! (-e /usr/common/graphics/ParaView/$PV_VER-mom-so/start_pvserver.sh) ]]
+PREFIX=/oasis/projects/nsf/gue998/bloring/installs/
+
+if [[ ! (-e $PREFIX/ParaView/$PV_VER/start_pvserver.sh) ]]
 then
-  PV_INSTALLS=`ls -1 /usr/common/graphics/ParaView/ | grep mom-so | cut -d- -f1 | tr '\n' ' '`
+  PV_INSTALLS=`ls -1 | grep '^[34]\.[0-9]\.[0-9]'`
 
   echo
   echo\
@@ -51,4 +51,5 @@ then
   sleep 1d
 fi
 
-/usr/common/graphics/ParaView/$PV_VER-mom-so/start_pvserver.sh $NCPUS $NCPUS_PER_SOCKET $WALLTIME $ACCOUNT $QUEUE $PORT
+$PREFIX/ParaView/$PV_VER/start_pvserver.sh $NCPUS $NCPUS_PER_NODE $NRENDER_THREADS $WALLTIME $ACCOUNT $QUEUE $PORT
+sleep 1d
