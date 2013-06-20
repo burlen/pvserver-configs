@@ -39,6 +39,8 @@ PV_HOME=/usr/common/graphics/ParaView/3.98.0-mom-so
 # modules envirtonment isn't setup when using the ssh command.
 LD_LIBRARY_PATH=$PV_HOME/lib:$PV_HOME/lib/paraview-3.98:/usr/common/usg/python/2.7.1/lib:/opt/gcc/default/snos/lib64:/opt/gcc/mpc/0.8.1/lib:/opt/gcc/mpfr/2.4.2/lib:/opt/gcc/gmp/4.3.2/lib:/opt/gcc/4.7.1/snos/lib64:/opt/moab/6.1.8/lib
 
+CRAY_LD_LIBRARY_PATH=/opt/cray/mpt/5.6.0/gni/mpich2-gnu/47/lib:/opt/cray/rca/1.0.0-2.0401.38656.2.2.gem/lib64:/opt/cray/xpmem/0.1-2.0401.36790.4.3.gem/lib64:/opt/cray/dmapp/3.2.1-1.0401.5983.4.5.gem/lib64:/opt/cray/pmi/4.0.0-1.0000.9282.69.4.gem/lib64:/opt/cray/ugni/4.0-1.0401.5928.9.5.gem/lib64:/opt/cray/udreg/2.3.2-1.0401.5929.3.3.gem/lib64:/opt/cray/libsci/12.0.00/GNU/47/mc12/lib:/opt/cray/mpt/5.6.0/gni/mpich2-pgi/119/lib:/opt/cray/mpt/5.6.0/gni/sma/lib64:/opt/cray/mpt/5.6.0/gni/sma64/lib64
+
 PATH=$PV_HOME/bin:/usr/common/usg/cmake/2.8.9/bin:/usr/common/usg/python/2.7.1/bin:/opt/cray/atp/1.5.0/bin:/opt/cray/xt-asyncpe/5.12/bin:/opt/cray/xpmem/0.1-2.0400.31280.3.1.gem/bin:/opt/cray/dmapp/3.2.1-1.0400.4255.2.159.gem/bin:/opt/cray/pmi/3.0.1-1.0000.9101.2.26.gem/bin:/opt/cray/ugni/2.3-1.0400.4374.4.88.gem/bin:/opt/cray/udreg/2.3.1-1.0400.4264.3.1.gem/bin:/opt/gcc/4.7.1/bin:/usr/common/usg/bin:/usr/common/mss/bin:/usr/common/nsg/bin:/usr/common/usg/darshan/2.2.4-pre3/bin:/usr/common/usg/darshan/2.2.4-pre3/../xt-asyncpe/5.12/bin:/usr/common/usg/altd/1.0/bin:/opt/moab/6.1.8/bin:/opt/torque/2.5.9/sbin:/opt/torque/2.5.9/bin:/opt/cray/eslogin/eswrap/1.0.10/bin:/opt/modules/3.2.6.6/bin:/usr/lpp/mmfs/bin:/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/X11R6/bin:/usr/games:/usr/lib64/jvm/jre/bin:/usr/lib/mit/bin:/usr/lib/mit/sbin:/opt/pathscale/bin:/opt/cray/bin 
 
 NCAT_PATH=/usr/common/graphics/ParaView/nmap-5.51/bin
@@ -103,6 +105,9 @@ export PV_NCPUS=$NCPUS
 export PV_NCPUS_PER_SOCKET=$NCPUS_PER_SOCKET
 export PV_LOGIN_HOST=$LOGIN_HOST
 #export PV_LOGIN_PORT=$LOGIN_PORT
+export PV_PATH=$PATH
+export PV_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+export PV_CRAY_LD_LIBRARY_PATH=$CRAY_LD_LIBRARY_PATH
 JID=`qsub -V -N PV-3.98.0-$PORT -A $ACCOUNT -q $QUEUE -l mppwidth=$NCPUS -l mppnppn=$NCPUS_PER_NODE -l walltime=$WALLTIME $PV_HOME/start_pvserver.qsub`
 ERRNO=$?
 if [ $ERRNO == 0 ]

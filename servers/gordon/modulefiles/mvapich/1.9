@@ -1,0 +1,31 @@
+#%Module1.0#####################################################################
+##
+if {[is-loaded intel/2011]} { module unload intel }
+if {![is-loaded gnu/4.6.1]} { module load gnu/4.6.1 }
+if {![is-loaded binutils/2.22]} { module load binutils/2.22 }
+if {![is-loaded autoconf/2.68]} { module load autoconf/2.68 }
+if {![is-loaded autoconf/2.68-fixes]} { module load autoconf/2.68-fixes }
+
+conflict mpich2/1.4
+conflict mpich2_ib/1.0.7
+conflict openmpi/1.4.3
+conflict openmpi_ib/1.4.1
+conflict mvapich2_ib/1.8a1p1
+conflict mpich/3.0.4
+
+set pkg_name mvapich
+set pkg_version 1.9
+set	pkg_home /oasis/projects/nsf/gue998/bloring/installs/$pkg_name/$pkg_version
+set pkg_description "mesa3d -- Open source OpenGL implementation"
+
+proc ModulesHelp { } {
+	global pkg_name
+  global pkg_version
+
+	puts stderr "module for $pkg_name $pkg_version\n"
+}
+
+module-whatis "$pkg_description"
+
+prepend-path LD_LIBRARY_PATH $pkg_home/lib
+prepend-path PATH $pkg_home/bin

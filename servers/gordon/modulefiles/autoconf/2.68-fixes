@@ -1,0 +1,34 @@
+#%Module1.0#####################################################################
+##
+
+prereq binutils/2.22
+prereq autoconf/2.68
+prereq gnu/4.6.1
+
+set pkg_name autoconf
+set pkg_version 2.68-fixes
+set	pkg_home /oasis/projects/nsf/gue998/bloring/installs/$pkg_name/$pkg_version
+set pkg_description "fixes for gordon's broken autoconf"
+
+proc ModulesHelp { } {
+	global pkg_name
+  global pkg_version
+
+	puts stderr "module for $pkg_name $pkg_version\n"
+}
+
+module-whatis "$pkg_description"
+
+
+set auto_conf /opt/gnu/autoconf/2.68/
+
+setenv LC_ALL "en_US"
+setenv PERL5LIB $auto_conf/share/autoconf
+setenv autom4te_perllibdir $auto_conf/share/autoconf
+setenv AC_MACRODIR $auto_conf/share/autoconf
+setenv AUTOM4TE $auto_conf/bin/autom4te
+setenv AUTOCONF $auto_conf/bin/autoconf
+setenv AUTOHEADER $auto_conf/bin/autoheader
+setenv AUTOM4TE_CFG $pkg_home/autom4te.cfg
+setenv AC_PROG_LIBTOOL /opt/gnu/libtool/2.4/bin/libtool
+setenv ACLOCAL "aclocal --system-acdir /opt/gnu/automake/1.11.5/share/aclocal-1.11/ -I /opt/gnu/libtool/2.4/share/aclocal/ -I /usr/share/aclocal/ -I /opt/gnu/automake/1.11.5/share/aclocal-1.11/"

@@ -1,0 +1,38 @@
+#PBS -S /bin/bash
+#PBS -j eo
+#PBS -V
+
+momhost=`/bin/hostname`
+
+source $PV_HOME/modules-gnu.sh
+module list
+
+export LP_NUM_THREADS=$lpnt
+echo "PV_HOME=$PV_HOME"
+echo "MPI_RANKS=$mpinp"
+echo "LP_NUM_THREADS=$LP_NUM_THREADS"
+
+# order by mpi rank count on x axis.
+MPI_RANKS_MAX=16
+id=`echo $MPI_RANKS_MAX*$lpnt+$mpinp | bc`
+echo "id=$id"
+
+wkd=$PV_HOME/llvmpipe-bench/
+mkdir -p $wkd/$id
+cd $wkd/$id
+
+echo "MPI_RANKS=$mpinp, LP_NUM_THREADS=$LP_NUM_THREADS" >> SurfaceLIC.log
+
+$PV_HOME/next/bin/pvpython $PV_HOME/asym-2d-lic.py &
+sleep 10s
+
+# gordon
+#mpiexec -np $mpinp bin/pvserver --reverse-connection --server-port=33345
+
+# hopper
+#aprun -n $mpinp -d 24 -cc none bin/pvserver --reverse-connection --server-port=33345 --client-host=$momhost
+
+# edison
+aprun -b -n $mpinp -d 1 -j 2 -cc none $PV_HOME/next/bin/pvserver --reverse-connection --server-port=33345 --client-host=$momhost
+
+ls -lah asym-2d-200.png
