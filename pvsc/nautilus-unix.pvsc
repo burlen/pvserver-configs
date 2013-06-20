@@ -28,6 +28,7 @@
         </Option>
         <Option name="PV_PATH" label="paraview version" save="true">
           <Enumeration default="/sw/analysis/paraview/3.98/sles11.1_intel11.1.038">
+            <Entry value="/sw/analysis/paraview/3.98.1/sles11.1_intel11.1.038" label="3.98.1"/>
             <Entry value="/sw/analysis/paraview/3.98/sles11.1_intel11.1.038"   label="3.98.0"/>
             <Entry value="/sw/analysis/paraview/3.14.1/sles11.1_intel11.1.038" label="3.14.1"/>
             <Entry value="/sw/analysis/paraview/3.12.0/sles11.1_intel11.1.038" label="3.12.0"/>
@@ -86,7 +87,7 @@
         <Option name="NCPUS" label="number of processes" save="true">
           <Range type="int" min="1" max="4" step="1" default="1"/>
         </Option>
-        <Option name="NGPUS" label="number of processes" save="true">
+        <Option name="NGPUS" label="number of GPUS" save="true">
           <Range type="int" min="1" max="2" step="1" default="1"/>
         </Option>
         <Option name="MEM" label="memory per process" save="true">
