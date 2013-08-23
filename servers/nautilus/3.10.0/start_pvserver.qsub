@@ -1,0 +1,20 @@
+#PBS -j eo
+
+echo "Starting ParaView..."
+echo "MPI_TYPE_MAX=$MPI_TYPE_MAX"
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+echo "PATH=$PATH"
+echo "PV_PATH=$PV_PATH"
+echo "PV_NCPUS=$PV_NCPUS"
+echo "PV_LOGIN_PORT=$PV_LOGIN_PORT"
+echo "PV_LOGIN_HOST=$PV_LOGIN_HOST"
+
+# remove this test once login nodes are online.
+if [ "$PV_LOGIN_HOST" = "nautilus" ]
+then
+    PV_LOGIN_HOST=localhost
+    echo "Using localhost on nautilus."
+fi
+
+mpiexec -np $PV_NCPUS $PV_PATH/bin/pvserver --reverse-connection --use-offscreen-rendering --server-port=$PV_LOGIN_PORT --client-host=$PV_LOGIN_HOST
+

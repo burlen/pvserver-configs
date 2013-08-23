@@ -1,0 +1,18 @@
+#PBS -j eo
+
+export LD_LIBRARY_PATH=$_LD_LIBRARY_PATH
+export PATH=$_PATH
+
+echo "Starting ParaView..."
+echo "MPI_TYPE_MAX=$MPI_TYPE_MAX"
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+echo "PATH=$PATH"
+echo "PV_PATH=$PV_PATH"
+echo "PV_NCPUS=$PV_NCPUS"
+echo "PV_LOGIN_HOST=$PV_LOGIN_HOST"
+echo "PV_BATCH_SCRIPT_PATH=$PV_BATCH_SCRIPT_PATH"
+
+#export PV_PLUGIN_DEBUG=1
+
+mpiexec -np $PV_NCPUS $PV_PATH/bin/pvbatch $PV_BATCH_SCRIPT_PATH
+

@@ -1,0 +1,76 @@
+#PBS -j eo
+
+echo "Starting ParaView..."
+echo "MPI_TYPE_MAX=$MPI_TYPE_MAX"
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+echo "PATH=$PATH"
+echo "PV_PATH=$PV_PATH"
+echo "PV_NCPUS=$PV_NCPUS"
+echo "PV_LOGIN_PORT=$PV_LOGIN_PORT"
+echo "PV_LOGIN_HOST=$PV_LOGIN_HOST"
+echo "PBS_DISPLAYS=$PBS_DISPLAYS"
+echo "*PBS_DISPLAYS="`cat $PBS_DISPLAYS`
+
+# remove this test once login nodes are online.
+if [ "$PV_LOGIN_HOST" = "nautilus" ]
+then
+    PV_LOGIN_HOST=localhost
+    echo "Using localhost on nautilus."
+fi
+
+cd $PV_PATH
+pwd
+
+# construct an array of the displays assigned us
+NDISPLAYS=`cat $PBS_DISPLAYS | wc -l`
+i=0
+for d in `cat $PBS_DISPLAYS`
+do
+    # note: colon is not allowed in mpirun command line
+    mptd=`echo $d | cut -d: -f2`
+    MPT_DISPLAYS[i]=$mptd
+
+    # start an x server for each display
+    xinit /bin/sleep 30d -- $d -layout $d -once -terminate -ac &
+    X_SERVERS[i]=$!
+
+    let i=i+1
+done
+
+echo "MPT_DISPLAYS=$MPT_DISPLAYS"
+echo "X_SERVERS=$X_SERVERS"
+
+sleep 30s
+
+DISPLAY=":${MPT_DISPLAYS[0]}" xrandr
+
+# construct the command line with displays assigned to
+# processes round-robin
+let PV_MAX_CPU=$PV_NCPUS-1
+for p in `seq 0 $PV_MAX_CPU`
+do
+    did=`expr $p % $NDISPLAYS`;
+
+    if [ -n "$cmd" ]
+    then
+        cmd=$cmd" : "
+    fi
+
+    cmd=$cmd"1 $PV_PATH/bin/pvserver --x11_display_spec=${MPT_DISPLAYS[$did]} --reverse-connection --server-port=$PV_LOGIN_PORT --client-host=$PV_LOGIN_HOST"
+done
+
+# run paraview
+echo "cmd=$cmd"
+
+mpirun $cmd 
+
+# cleanup the x servers
+let MAX_DISPLAY=$NDISPLAYS-1
+for i in `seq 0 $MAX_DISPLAY`
+do
+    x_serv=${X_SERVERS[i]}
+    kill $x_serv
+    echo "killed $x_serv"
+done
+
+
