@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $# != 7 ]
+if [[ $# < 7 ]]
 then
   echo "expected 7 argumnets but got $#"
   echo
@@ -19,6 +19,7 @@ then
   echo "  QUEUE     - the queue to use."
   echo "  PORT      - the port number of the server side tunnel."
   echo "  PV_VER    - the desired pv version number."
+  echo "  PYTHON    - if set use python enabled build."
   echo
   echo "assumes a reverse tunel is set up on localhost to the remote site."
   echo
@@ -33,8 +34,16 @@ ACCOUNT=$4
 QUEUE=$5
 PORT=$6
 PV_VER=$7
+USE_PY=$8
 
-if [[ ! (-e /usr/common/graphics/ParaView/$PV_VER-mom-so/start_pvserver.sh) ]]
+# if python then dso
+PV_LIB_EXT=so
+if [[ "$USE_PY" == "0" ]]
+then
+  PV_LIB_EXT=a
+fi
+
+if [[ ! (-e /usr/common/graphics/ParaView/$PV_VER-mom-$PV_LIB_EXT/start_pvserver.sh) ]]
 then
   PV_INSTALLS=`ls -1 /usr/common/graphics/ParaView/ | grep mom-so | cut -d- -f1 | tr '\n' ' '`
 
@@ -51,4 +60,13 @@ then
   sleep 1d
 fi
 
-/usr/common/graphics/ParaView/$PV_VER-mom-so/start_pvserver.sh $NCPUS $NCPUS_PER_SOCKET $WALLTIME $ACCOUNT $QUEUE $PORT
+NERSC_PV_VER=4.0.1
+if [ "$PV_VER" != "$NERSC_PV_VER" ]
+then
+  echo
+  echo "WARNING: You are using ParaView $PV_VER. This is not the recommnded version."
+  echo "WARNING: Please consider upgrading to ParaView $NERSC_PV_VER."
+  echo
+fi
+
+/usr/common/graphics/ParaView/$PV_VER-mom-$PV_LIB_EXT/start_pvserver.sh $NCPUS $NCPUS_PER_SOCKET $WALLTIME $ACCOUNT $QUEUE $PORT
