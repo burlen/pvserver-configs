@@ -2,6 +2,9 @@
   <Server name="hopper" resource="csrc://">
     <CommandStartup>
       <Options>
+        <Option name="USE_PYTHON" label="use python" save="true">
+          <Boolean default="true"/>
+        </Option>
         <Option name="REMOTE_USER" label="user name" save="true">
           <String default="bloring"/>
         </Option>
@@ -55,6 +58,7 @@
           <Argument value="$QUEUE$"/>
           <Argument value="$PV_SERVER_PORT$"/>
           <Argument value="$PV_VERSION_FULL$"/>
+          <Argument value="$USE_PYTHON$"/>
         </Arguments>
       </Command>
     </CommandStartup>
