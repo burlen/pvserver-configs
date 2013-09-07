@@ -24,6 +24,9 @@ echo "PV_MOM_PORT=$PV_MOM_PORT"
 echo "PV_MOM_HOST=$PV_MOM_HOST"
 echo "ATP_ENABLED=$ATP_ENABLED"
 echo "CRAY_ROOTFS=$CRAY_ROOTFS"
+echo "LP_NUM_THREADS=$LP_NUM_THREADS"
+
+#export LD_BIND_NOW=1
 
 # start the server
 aprun -n $PV_NCPUS -S $PV_NCPUS_PER_SOCKET pvserver --reverse-connection --use-offscreen-rendering --server-port=$PV_MOM_PORT --client-host=$PV_MOM_HOST
