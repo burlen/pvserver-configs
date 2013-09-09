@@ -3,7 +3,7 @@
     <CommandStartup>
       <Options>
         <Option name="USE_PYTHON" label="use python" save="true">
-          <Boolean default="true"/>
+          <Boolean default="false"/>
         </Option>
         <Option name="REMOTE_USER" label="user name" save="true">
           <String default="USER"/>
