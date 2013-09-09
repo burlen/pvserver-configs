@@ -36,7 +36,8 @@ PORT=$6
 PV_VER=$7
 USE_PY=$8
 
-# if python then dso
+# if python then use the shared library
+# build
 PV_LIB_EXT=so
 if [[ "$USE_PY" == "0" ]]
 then
@@ -45,16 +46,31 @@ fi
 
 if [[ ! (-e /usr/common/graphics/ParaView/$PV_VER-mom-$PV_LIB_EXT/start_pvserver.sh) ]]
 then
-  PV_INSTALLS=`ls -1 /usr/common/graphics/ParaView/ | grep mom-so | cut -d- -f1 | tr '\n' ' '`
+  PV_PY_INSTALLS=`ls -1 /usr/common/graphics/ParaView/ | grep mom-so | cut -d- -f1 | tr '\n' ' '`
+  PV_INSTALLS=`ls -1 /usr/common/graphics/ParaView/ | grep mom-a | cut -d- -f1 | tr '\n' ' '`
+
+  haspystr=" with "
+  if [[ "$USE_PY" == "0" ]]
+  then
+    haspystr=" without "
+  fi
 
   echo
   echo\
-    "Error: Version $PV_VER is not installed. Client and server versions "\
-    "must match. You will need to download and install a client biinary "\
-    "for one of the following installed versions from www.paraview.org "\
-    "and try again."
+    "Error: Version $PV_VER $haspystr python is not installed. Client and "\
+    "server versions must match. You will need to download and install a "\
+    "client binary for one of the following installed versions from "\
+    "www.paraview.org and try again."
   echo
+  echo "installs with python enabled"
+  echo $PV_PY_INSTALLS
+  echo
+  echo "installs with out python enabled"
   echo $PV_INSTALLS
+  echo
+  echo\
+    "note: python enabled installs use DSOs which have increased startup "\
+    "overhad."
   echo
 
   sleep 1d
