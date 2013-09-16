@@ -2,6 +2,9 @@
   <Server name="NERSC Edison" resource="csrc://">
     <CommandStartup>
       <Options>
+        <Option name="USE_DSO" label="use DSOs" save="true">
+          <Boolean default="false"/>
+        </Option>
         <Option name="REMOTE_USER" label="user name" save="true">
           <String default="USER"/>
         </Option>
@@ -9,13 +12,10 @@
           <Range type="int" min="1" max="65535" step="1" default="11111"/>
         </Option>
         <Option name="NCPUS" label="number of processes" save="true">
-          <Range type="int" min="1" max="153216" step="1" default="16"/>
+          <Range type="int" min="1" max="153216" step="1" default="24"/>
         </Option>
         <Option name="NCPUS_PER_SOCKET" label="process per socket" save="true">
-          <Range type="int" min="1" max="8" step="1" default="8"/>
-        </Option>
-        <Option name="NRENDER_THREADS" label="number of rendering threads per process" save="true">
-          <Range type="int" min="1" max="32" step="1" default="4"/>
+          <Range type="int" min="1" max="12" step="1" default="12"/>
         </Option>
         <Option name="WALLTIME" label="job wall time" save="true">
           <String default="HH:MM:SS"/>
@@ -76,12 +76,12 @@
           <Argument value="/usr/common/graphics/ParaView/start_pvserver.sh"/>
           <Argument value="$NCPUS$"/>
           <Argument value="$NCPUS_PER_SOCKET$"/>
-          <Argument value="$NRENDER_THREADS$"/>
           <Argument value="$WALLTIME$"/>
           <Argument value="$ACCOUNT$"/>
           <Argument value="$QUEUE$"/>
           <Argument value="$PV_SERVER_PORT$"/>
           <Argument value="$PV_VERSION_FULL$"/>
+          <Argument value="$USE_DSO$"/>
         </Arguments>
       </Command>
     </CommandStartup>

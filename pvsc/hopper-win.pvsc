@@ -2,7 +2,7 @@
   <Server name="hopper" resource="csrc://">
     <CommandStartup>
       <Options>
-        <Option name="USE_PYTHON" label="use python" save="true">
+        <Option name="USE_DSO" label="use python" save="true">
           <Boolean default="false"/>
         </Option>
         <Option name="REMOTE_USER" label="user name" save="true">
@@ -58,7 +58,7 @@
           <Argument value="$QUEUE$"/>
           <Argument value="$PV_SERVER_PORT$"/>
           <Argument value="$PV_VERSION_FULL$"/>
-          <Argument value="$USE_PYTHON$"/>
+          <Argument value="$USE_DSO$"/>
         </Arguments>
       </Command>
     </CommandStartup>
