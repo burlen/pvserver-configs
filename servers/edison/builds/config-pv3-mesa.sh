@@ -1,20 +1,21 @@
 #!/bin/bash
- 
+
 if [ "$XTPE_LINK_TYPE" != "dynamic" ]
 then
   echo "ERROR: You forgot export XTPE_LINK_TYPE=dynamic, I'll set it for you."
   export XTPE_LINK_TYPE=dynamic
 fi
 
-COMP=/opt/gcc/4.7.2/bin/
-MPT=/opt/cray/mpt/5.6.1/gni/
-MPI2=$MPT/mpich2-gnu/47/
-XPMEM=/opt/cray/xpmem/0.1-2.0500.39645.2.7.ari/
-DMAP=/opt/cray/dmapp/5.0.1-1.0500.6257.4.208.ari/
-UGNI=/opt/cray/ugni/5.0-1.0500.6415.7.120.ari/
-UDREG=/opt/cray/udreg/2.3.2-1.0500.6003.1.18.ari/
-PMI=/opt/cray/pmi/4.0.1-1.0000.9421.73.3.ari/
-ALPS=/opt/cray/alps/5.0.2-2.0500.7827.1.1.ari/
+COMP=/opt/gcc/4.8.0/bin/
+MPT=/opt/cray/mpt/6.0.0/gni/mpich2-gnu/48/
+XPMEM=/opt/cray/xpmem/0.1-2.0500.41356.1.11.ari/
+DMAP=/opt/cray/dmapp/6.0.1-1.0500.7263.9.31.ari/
+UGNI=/opt/cray/ugni/5.0-1.0500.0.3.306.ari/
+UDREG=/opt/cray/udreg/2.3.2-1.0500.6756.2.10.ari/
+PMI=/opt/cray/pmi/4.0.1-1.0000.9725.84.2.ari/
+RCA=/opt/cray/rca/1.0.0-2.0500.41336.1.120.ari/
+SMA=/opt/cray/mpt/6.0.0/gni/sma/
+ALPS=/opt/cray/alps/5.0.3-2.0500.8213.1.1.ari/
 APRUN=/usr/common/usg/altd/1.0/
 MESA=/usr/common/graphics/mesa/9.2.0/
 PYTHON=/usr/common/usg/python/2.7.3/
@@ -55,9 +56,9 @@ cmake \
     -DPARAVIEW_USE_MPI=ON \
     -DMPI_CXX_COMPILER=$COMP/g++ \
     -DMPI_C_COMPILER=$COMP/gcc \
-    -DMPI_LIBRARY=$MPI2/lib/libmpich_gnu_47.so\
-    -DMPI_EXTRA_LIBRARY=$MPI2/lib/libmpichcxx_gnu_47.so\;$MPI2/lib/libmpl.so\;/usr/lib64/librt.so\;$MPT/sma/lib64/libsma.so\;$XPMEM/lib64/libxpmem.so\;$DMAP/lib64/libdmapp.so\;$UGNI/lib64/libugni.so\;$PMI/lib64/libpmi.so\;$ALPS/lib64/libalpslli.so\;$ALPS/lib64/libalpsutil.so\;$UDREG/lib64/libudreg.so\;/usr/lib64/libpthread.so\; \
-    -DMPI_INCLUDE_PATH=$MPI2/include \
+    -DMPI_LIBRARY=$MPT/lib/libmpich_gnu_48.so\
+    -DMPI_EXTRA_LIBRARY=$MPT/lib/libmpichcxx_gnu_48.so\;$MPT/lib/libmpl.so\;/usr/lib64/librt.so\;$SMA/lib64/libsma.so\;$XPMEM/lib64/libxpmem.so\;$DMAP/lib64/libdmapp.so\;$UGNI/lib64/libugni.so\;$PMI/lib64/libpmi.so\;$RCA/lib64/librca.so\;$ALPS/lib64/libalpslli.so\;$ALPS/lib64/libalpsutil.so\;$UDREG/lib64/libudreg.so\;/usr/lib64/libpthread.so\; \
+    -DMPI_INCLUDE_PATH=$MPT/include \
     -DMPIEXEC=$APRUN/bin/aprun \
     -DPARAVIEW_USE_VISITBRIDGE=ON \
     -DVISIT_BUILD_READER_CGNS=OFF \
