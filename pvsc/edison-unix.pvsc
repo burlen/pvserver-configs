@@ -2,9 +2,6 @@
   <Server name="NERSC Edison" resource="csrc://">
     <CommandStartup>
       <Options>
-        <Option name="USE_DSO" label="use DSOs" save="true">
-          <Boolean default="false"/>
-        </Option>
         <Option name="REMOTE_USER" label="user name" save="true">
           <String default="USER"/>
         </Option>
@@ -20,36 +17,21 @@
         <Option name="WALLTIME" label="job wall time" save="true">
           <String default="HH:MM:SS"/>
         </Option>
-        <!--
-        enumerations are broken in 3.14.0
-        <Option name="PV_VER" label="paraview version" save="true">
-          <String default="3.14.0"/>
-        </Option>
-        -->
-        <!--
-        3.10.0 doesn't provide PV_VERSION_FULL
-        <Option name="PV_VER" label="paraview version" save="true">
-          <Enumeration default="3.14.1">
-            <Entry value="3.10.0" label="3.10.0"/>
-            <Entry value="3.12.0" label="3.12.0"/>
-            <Entry value="3.14.0" label="3.14.1"/>
-            <Entry value="3.14.1" label="3.14.1"/>
-          </Enumeration>
-        </Option>
-        -->
         <Option name="ACCOUNT" label="account" save="true">
           <String default="default"/>
         </Option>
-        <!--
-        enumerations are broken in 3.14.0
-        <Option name="QUEUE" label="queue" save="true">
-          <String default="interactive"/>
-        </Option>
-        -->
         <Option name="QUEUE" label="queue" save="true">
           <Enumeration default="regular">
             <Entry value="debug" label="debug"/>
             <Entry value="regular" label="regular"/>
+            <Entry value="premium" label="premium"/>
+          </Enumeration>
+        </Option>
+        <Option name="LINK_TYPE" label="link" save="true">
+          <Enumeration default="shared">
+            <Entry value="0" label="static"/>
+            <Entry value="1" label="shared"/>
+            <Entry value="2" label="hybrid"/>
           </Enumeration>
         </Option>
         <Option name="SSH_PATH" label="/path/to/ssh" save="true">
@@ -69,10 +51,6 @@
           <Argument value="-R"/>
           <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
           <Argument value="$REMOTE_USER$@edison.nersc.gov"/>
-          <!--
-          3.10.0 doesn't provide PV_VERSION_FULL
-          <Argument value="/usr/common/graphics/ParaView/$PV_VER$-mom-so/start_pvserver.sh"/>
-          -->
           <Argument value="/usr/common/graphics/ParaView/start_pvserver.sh"/>
           <Argument value="$NCPUS$"/>
           <Argument value="$NCPUS_PER_SOCKET$"/>
@@ -81,7 +59,7 @@
           <Argument value="$QUEUE$"/>
           <Argument value="$PV_SERVER_PORT$"/>
           <Argument value="$PV_VERSION_FULL$"/>
-          <Argument value="$USE_DSO$"/>
+          <Argument value="$LINK_TYPE$"/>
         </Arguments>
       </Command>
     </CommandStartup>
