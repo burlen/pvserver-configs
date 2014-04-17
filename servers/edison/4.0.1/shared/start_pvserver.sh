@@ -28,7 +28,17 @@ if [[ "$ACCOUNT" == "default" ]]
 then
   ACCOUNT=`/usr/common/usg/bin/getnim -U $USER -D | cut -d" " -f1`
 fi
-ACCOUNTS=`/usr/common/usg/bin/getnim -U $USER | cut -d" " -f1 | tr '\n' ' '`
+if [[ -z "$ACCOUNT" ]]
+then
+  echo
+  echo "ERROR: NIM Failed to lookup your account. If you know"
+  echo "       your accounts please set one manually in the"
+  echo "       connection dialog. Your default will be used."
+  echo
+#  sleep 1d
+else
+  ACCOUNTS=`/usr/common/usg/bin/getnim -U $USER | cut -d" " -f1 | tr '\n' ' '`
+fi
 QUEUE=$5
 PORT=$6
 LOGIN_HOST=`/bin/hostname`
@@ -57,8 +67,8 @@ module swap udreg udreg/2.3.2-1.0500.6756.2.10.ari
 module swap cray-mpich cray-mpich/6.0.2
 module swap xpmem xpmem/0.1-2.0500.41356.1.11.ari
 
-LD_LIBRARY_PATH=$PV_HOME/lib:$PV_HOME/lib/paraview-$PV_VER_SHORT:$MESA_HOME/lib:/usr/common/usg/python/2.7.3/lib:$LD_LIBRRY_PATH
-PATH=$PV_HOME/bin:$NCAT_HOME/bin:$LLVM_HOME/bin:$PATH
+PV_LD_LIBRARY_PATH=$PV_HOME/lib:$PV_HOME/lib/paraview-$PV_VER_SHORT:$MESA_HOME/lib:/usr/common/usg/python/2.7.3/lib
+PV_PATH=$PV_HOME/bin:$NCAT_HOME/bin:$LLVM_HOME/bin
 
 echo '=============================================================== '
 echo '      ___               _   ___                ____  ___   ___  '
@@ -94,6 +104,9 @@ $NCAT_HOME/bin/ncat -l $LOGIIN_HOST $LOGIN_PORT --sh-exec="$NCAT_HOME/bin/ncat l
 echo "Starting ParaView via qsub..."
 
 # pass these to the script
+export PV_HOME
+export PV_LD_LIBRARY_PATH
+export PV_PATH
 export PV_NCAT_PATH=$NCAT_HOME/bin
 export PV_PORT=$PORT
 export PV_NCPUS=$NCPUS
@@ -101,7 +114,7 @@ export PV_NCPUS_PER_SOCKET=$NCPUS_PER_SOCKET
 export PV_RENDER_THREADS=$RENDER_THREADS
 export PV_LOGIN_HOST=$LOGIN_HOST
 export PV_LOGIN_PORT=$LOGIN_PORT
-JID=`qsub -V -N PV-$PV_VER_FULL-$PORT -A $ACCOUNT -q $QUEUE -l mppwidth=$NCPUS -l mppnppn=$NCPUS_PER_NODE -l walltime=$WALLTIME $PV_HOME/start_pvserver.qsub`
+JID=`qsub -V -N PV-$PV_VER_FULL-$PORT -A "$ACCOUNT" -q "$QUEUE" -l mppwidth=$NCPUS -l mppnppn=$NCPUS_PER_NODE -l walltime=$WALLTIME $PV_HOME/start_pvserver.qsub`
 ERRNO=$?
 if [ $ERRNO == 0 ]
 then
