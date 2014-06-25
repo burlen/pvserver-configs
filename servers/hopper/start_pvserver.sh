@@ -76,7 +76,7 @@ then
   sleep 1d
 fi
 
-NERSC_PV_VER=4.0.1
+NERSC_PV_VER=4.1.0
 if [ "$PV_VER" != "$NERSC_PV_VER" ]
 then
   echo
