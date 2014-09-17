@@ -14,18 +14,14 @@
         <Option name="NCPUS_PER_NODE" label="processes per node" save="true">
           <Range type="int" min="1" max="8" step="1" default="1"/>
         </Option>
+        <Option name="NODE_TYPE" label="node type" save="true">
+          <Enumeration default="regular">
+            <Entry value="regular" label="24GB"/>
+            <Entry value="bigmem" label="48GB"/>
+          </Enumeration>
+        </Option>
         <Option name="WALLTIME" label="job wall time" save="true">
           <String default="HH:MM:SS"/>
-        </Option>
-        <Option name="PV_PATH" label="paraview version" save="true">
-          <Enumeration default="/usr/common/graphics/ParaView/3.98.1/">
-            <Entry value="/usr/common/graphics/ParaView/3.8.1/"  label="3.8.1" />
-            <Entry value="/usr/common/graphics/ParaView/3.10.0/" label="3.10.0"/>
-            <Entry value="/usr/common/graphics/ParaView/3.12.0/" label="3.12.0"/>
-            <Entry value="/usr/common/graphics/ParaView/3.14.1/" label="3.14.1"/>
-            <Entry value="/usr/common/graphics/ParaView/3.98.0/" label="3.98.0"/>
-            <Entry value="/usr/common/graphics/ParaView/3.98.1/" label="3.98.1"/>
-          </Enumeration>
         </Option>
         <Option name="ACCOUNT" label="account" save="true">
           <String default="default"/>
@@ -53,17 +49,20 @@
           <Argument value="-R"/>
           <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
           <Argument value="$REMOTE_USER$@carver.nersc.gov"/>
-          <Argument value="$PV_PATH$/start_pvserver.sh"/>
+          <Argument value="/usr/common/graphics/ParaView/start_pvserver.sh"/>
           <Argument value="$NNODES$"/>
           <Argument value="$NCPUS_PER_NODE$"/>
+          <Argument value="$NODE_TYPE$"/>
           <Argument value="$WALLTIME$"/>
           <Argument value="$ACCOUNT$"/>
           <Argument value="$QUEUE$"/>
           <Argument value="$PV_SERVER_PORT$"/>
+          <Argument value="$PV_VERSION_FULL$"/>
         </Arguments>
       </Command>
     </CommandStartup>
   </Server>
+  <!--
   <Server name="carver-xl-mem" resource="csrc://">
     <CommandStartup>
       <Options>
@@ -134,4 +133,5 @@
       </Command>
     </CommandStartup>
   </Server>
+  -->
 </Servers>
