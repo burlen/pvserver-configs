@@ -1,5 +1,5 @@
 <Servers>
-  <Server name="carver" resource="csrc://">
+  <Server name="NERSC Carver" resource="csrc://">
     <CommandStartup>
       <Options>
         <Option name="REMOTE_USER" label="user name" save="true">
