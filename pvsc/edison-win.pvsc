@@ -27,13 +27,6 @@
             <Entry value="premium" label="premium"/>
           </Enumeration>
         </Option>
-        <Option name="LINK_TYPE" label="link" save="true">
-          <Enumeration default="shared">
-            <Entry value="0" label="static"/>
-            <Entry value="1" label="shared"/>
-            <Entry value="2" label="hybrid"/>
-          </Enumeration>
-        </Option>
         <Option name="SSH_PATH" label="/path/to/plink.exe" save="true">
           <File default="plink.exe"/>
         </Option>
@@ -58,7 +51,7 @@
           <Argument value="$QUEUE$"/>
           <Argument value="$PV_SERVER_PORT$"/>
           <Argument value="$PV_VERSION_FULL$"/>
-          <Argument value="$LINK_TYPE$"/>
+          <Argument value="hybrid"/>
         </Arguments>
       </Command>
     </CommandStartup>
