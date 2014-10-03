@@ -1,0 +1,39 @@
+<Servers>
+  <Server name="LBL Dresden" resource="csrc://">
+    <CommandStartup>
+      <Options>
+        <Option name="REMOTE_USER" label="user name" save="true">
+          <String default="USER"/>
+        </Option>
+        <Option name="PV_SERVER_PORT" label="tunnel port" save="true">
+          <Range type="int" min="1" max="65535" step="1" default="11111"/>
+        </Option>
+        <Option name="NCPUS" label="number of processes" save="true">
+          <Range type="int" min="1" max="153216" step="1" default="24"/>
+        </Option>
+        <Option name="SSH_PATH" label="/path/to/ssh" save="true">
+          <File default="/usr/bin/ssh"/>
+        </Option>
+        <Option name="XTERM_PATH" label="/path/to/xterm" save="true">
+          <File default="/usr/bin/xterm"/>
+        </Option>
+      </Options>
+      <Command exec="$XTERM_PATH$" timeout="0" delay="0" Arguments="0">
+        <Arguments>
+          <Argument value="-T"/>
+          <Argument value="ParaView $REMOTE_USER$@dresden"/>
+          <Argument value="-e"/>
+          <Argument value="$SSH_PATH$"/>
+          <Argument value="-t"/>
+          <Argument value="-R"/>
+          <Argument value="$PV_SERVER_PORT$:localhost:$PV_SERVER_PORT$"/>
+          <Argument value="$REMOTE_USER$@dresden.lbl.gov"/>
+          <Argument value="/usr/common/graphics/xeon/ParaView/start_pvserver.sh"/>
+          <Argument value="$NCPUS$"/>
+          <Argument value="$PV_SERVER_PORT$"/>
+          <Argument value="$PV_VERSION_FULL$"/>
+        </Arguments>
+      </Command>
+    </CommandStartup>
+  </Server>
+</Servers>
