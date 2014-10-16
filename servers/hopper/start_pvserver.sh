@@ -36,6 +36,15 @@ PORT=$6
 PV_VER=$7
 USE_PY=$8
 
+#workaround bug in 4.2.0 release version
+PV_VER=`echo $PV_VER | cut -d- -f1`
+
+# with 4.2.0 python can be included in static linked builds
+# this means we no longer need two installs!! The following
+# logic should be removed when the 4.1 install is no longer
+# needed. starting with 4.2 it's no longer a user option in
+# our pvsc.
+
 # if python then use the shared library
 # build
 PV_LIB_EXT=so
@@ -81,7 +90,6 @@ if [ "$PV_VER" != "$NERSC_PV_VER" ]
 then
   echo
   echo "WARNING: You are using ParaView $PV_VER. This is not the recommnded version."
-  echo "WARNING: Please consider upgrading to ParaView $NERSC_PV_VER."
   echo
 fi
 
