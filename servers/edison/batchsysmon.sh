@@ -35,10 +35,9 @@ do
     H|h)
       echo
       echo "    u - qstat $JID."
-      echo "    s - showq."
+      echo "    s - showstart $JID."
       echo "    c - checkjob $JID."
-      echo "    d - delete job $JID."
-      echo "    q - quit, and delete job $JID."
+      echo "    d - delete job $JID and exit."
       echo "    p - pages job $JID's stderr/stdout stream."
       echo "    h - print help message."
       echo
@@ -59,14 +58,9 @@ do
       ;;
 
     D|d)
-      echo
-      qdel $JID
-      echo
-      ;;
-
-    Q|q)
-      echo
-      qdel $JID
+      echo "deleting $JID"
+      echo "goodbye!"
+      sleep 15s
       exit 0
       ;;
 
@@ -78,7 +72,7 @@ do
 
     S|s)
       echo
-      showq
+      showstart $JID
       echo
       ;;
 
@@ -95,6 +89,3 @@ do
       ;;
    esac
 done
-
-
-

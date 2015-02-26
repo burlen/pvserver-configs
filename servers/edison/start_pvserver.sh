@@ -29,8 +29,16 @@ WALLTIME=$3
 ACCOUNT=$4
 QUEUE=$5
 PORT=$6
-PV_VER=$7
+PV_VER=`echo $7 | cut -d- -f1`
 LINK=$8
+
+# a sanity check, because aprun doesn't handle this gracefully
+if [[ $NCPUS_PER_SOCKET -gt $NCPUS ]]
+then
+  echo "WARNING! NCPUS_PER_SOCKET must be less than or equal to NCPUS"
+  echo "setting NCPUS_PER_SOCKET=$NCPUS"
+  NCPUS_PER_SOCKET=$NCPUS
+fi
 
 # if python support requested then use the DSO install
 # else use the static linked install, it starts much faster.
@@ -51,7 +59,7 @@ then
   HAVE_HYBRID=1
 fi
 # to support old installs that don't have all the link types
-if [[ "$LINK" == "0" ]]
+if [[ "$LINK" == "static"  || "$LINK" == "0" ]]
 then
   if [[ "$HAVE_STATIC" == "1" ]]
   then
@@ -63,10 +71,9 @@ then
   then
     PV_LINK=shared
   else
-    PV_LINK=none
+    PV_LINK=
   fi
-fi
-if [[ "$LINK" == "1" ]]
+elif [[ "$LINK" == "shared" || "$LINK" == "1" ]]
 then
   if [[ "$HAVE_SHARED" == "1" ]]
   then
@@ -78,10 +85,9 @@ then
   then
     PV_LINK=static
   else
-    PV_LINK=none
+    PV_LINK=
   fi
-fi
-if [[ "$LINK" == "2" ]]
+elif [[ "$LINK" == "hybrid" || "$LINK" == "2" ]]
 then
   if [[ "$HAVE_HYBRID" == "1" ]]
   then
@@ -93,13 +99,15 @@ then
   then
     PV_LINK=static
   else
-    PV_LINK=none
+    PV_LINK=
   fi
+else
+    PV_LINK=
 fi
 
 # this is the recommended version to use on NERSC edison
 # when new PV is installed this value needs to be updated
-NERSC_PV_VER=4.1.0
+NERSC_PV_VER=4.3.1
 if [[ "$PV_VER" != "$NERSC_PV_VER" ]]
 then
   echo\
@@ -120,9 +128,11 @@ then
   echo
   echo $PV_INSTALLS
   echo
+  echo "/usr/common/graphics/ParaView/$PV_VER/$PV_LINK/start_pvserver.sh"
 
   sleep 1d
 fi
 
 /usr/common/graphics/ParaView/$PV_VER/$PV_LINK/start_pvserver.sh $NCPUS $NCPUS_PER_SOCKET $WALLTIME $ACCOUNT $QUEUE $PORT
-sleep 1d
+echo "Job has exited. Goodbye!"
+sleep 15s
