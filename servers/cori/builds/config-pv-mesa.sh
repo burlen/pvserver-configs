@@ -42,30 +42,6 @@ ZLIB=/usr/lib64/
 #    -DGENERIC_IO_INCLUDE_DIR=/usr/common/graphics/ParaView/PDACS/genericio/include \
 #    -DGENERIC_IO_LIBRARIES=/usr/common/graphics/ParaView/PDACS/genericio/lib/libGenericIO.a \
 
-#    -DVISIT_BUILD_READER_GMV=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_AdiosReader=FALSE \
-#    -DPARAVIEW_BUILD_PLUGIN_AnalyzeNIfTIIO=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_ArrowGlyph=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_EyeDomeLighting=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_ForceTime=FALSE \
-#    -DPARAVIEW_BUILD_PLUGIN_GMVReader=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_H5PartReader=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_InSituExodus=FALSE \
-#    -DPARAVIEW_BUILD_PLUGIN_Moments=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_Nektar=FALSE \
-#    -DPARAVIEW_BUILD_PLUGIN_NonOrthogonalSource=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_PacMan=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_PointSprite=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_PrismPlugin=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_QuadView=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_SLACTools=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_SciberQuestToolKit=ON \
-#    -DPARAVIEW_BUILD_PLUGIN_SierraPlotTools=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_StreamingParticles=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_SurfaceLIC=ON \
-#    -DPARAVIEW_BUILD_PLUGIN_UncertaintyRendering=$DSO \
-#    -DPARAVIEW_BUILD_PLUGIN_VaporPlugin=FALSE \
-
 echo
 echo "BUILD_TYPE=$BUILD_TYPE"
 echo "LIB_EXT=$LIB_EXT"
