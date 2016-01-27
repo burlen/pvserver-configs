@@ -17,11 +17,11 @@ echo "Starting batch job monitor..."
 echo "JID=$JID"
 echo "JERRF=$JERRF"
 echo
-qstat -G $JID
+squeue -j $JID
 echo
 
 # make sure the job is deleted, if this window closes.
-trap "{ qdel $JID; exit 0;  }" EXIT
+trap "{ scancel $JID; exit 0;  }" EXIT
 
 
 # keep the shell open
@@ -34,9 +34,7 @@ do
   case $inchar in
     H|h)
       echo
-      echo "    u - qstat $JID."
-      echo "    s - showstart $JID."
-      echo "    c - checkjob $JID."
+      echo "    u - squeue $JID."
       echo "    d - delete job $JID and exit."
       echo "    p - pages job $JID's stderr/stdout stream."
       echo "    h - print help message."
@@ -64,21 +62,9 @@ do
       exit 0
       ;;
 
-    C|c)
-      echo
-      checkjob $JID
-      echo
-      ;;
-
-    S|s)
-      echo
-      showstart $JID
-      echo
-      ;;
-
     U|u)
       echo
-      qstat -G $JID
+      squeue -j $JID
       echo
       ;;
 

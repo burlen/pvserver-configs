@@ -21,6 +21,9 @@ NCPUS_PER_SOCKET=$2
 NCPUS_PER_NODE=`echo 2*$NCPUS_PER_SOCKET | bc`
 NNODES=`echo $NCPUS/$NCPUS_PER_NODE | bc`
 (( NNODES = NNODES<1 ? 1 : $NNODES ))
+CPU_STRIDE=`echo 12/$NCPUS_PER_NODE | bc`
+(( CPU_STRIDE = CPU_STRIDE<1 ? 1 : $CPU_STRIDE ))
+(( CPU_STRIDE = CPU_STRIDE>12 ? 12 : $CPU_STRIDE ))
 MEM=`echo 64*$NNODES | bc`
 WALLTIME=$3
 ACCOUNT=$4
@@ -41,7 +44,7 @@ else
 fi
 QUEUE=$5
 PORT=$6
-LOGIN_HOST=`/bin/hostname`
+LOGIN_HOST=$(cat /etc/hosts | grep $(hostname)'[^-]' | tr -s ' ' | cut -d' ' -f1)
 let LOGIN_PORT=$PORT+1
 
 # note: mesa  maxes out at 16
@@ -55,7 +58,7 @@ PV_VER_FULL=4.3.1
 PV_HOME=/usr/common/graphics/ParaView/$PV_VER_FULL/
 MESA_HOME=/usr/common/graphics/mesa/10.4.3/classic/shared/
 GLU_HOME=/usr/common/graphics/glu/9.0.0/shared/
-NCAT_HOME=/usr/common/graphics/ParaView/nmap-6.25
+NCAT_HOME=/usr/common/graphics/ParaView/nmap-7.01
 
 module swap PrgEnv-intel PrgEnv-gnu/5.2.40
 module swap PrgEnv-gnu PrgEnv-gnu/5.2.40
@@ -82,6 +85,7 @@ echo "ACCOUNT=$ACCOUNT"
 echo "NCPUS=$NCPUS"
 echo "NCPUS_PER_SOCKET=$NCPUS_PER_SOCKET"
 echo "NCPUS_PER_NODE=$NCPUS_PER_NODE"
+echo "CPU_STRIDE=$CPU_STRIDE"
 echo "NNODES=$NNODES"
 echo "MEM=$MEM\GB"
 echo "RENDER_THREADS=$RENDER_THREADS"
@@ -105,11 +109,12 @@ export PV_NCAT_PATH=$NCAT_HOME/bin
 export PV_PORT=$PORT
 export PV_NCPUS=$NCPUS
 export PV_NCPUS_PER_SOCKET=$NCPUS_PER_SOCKET
+export PV_CPU_STRIDE=$CPU_STRIDE
 export PV_RENDER_THREADS=$RENDER_THREADS
 export PV_LOGIN_HOST=$LOGIN_HOST
 export PV_LOGIN_PORT=$LOGIN_PORT
 export ATP_ENABLED=1
-JID=`qsub -V -N PV-$PV_VER_FULL-$PORT -A "$ACCOUNT" -q "$QUEUE" -l mppwidth=$NCPUS -l mppnppn=$NCPUS_PER_NODE -l walltime=$WALLTIME $PV_HOME/start_pvserver.qsub`
+JID=`sbatch -J ParaView-$PV_VER_FULL -A "$ACCOUNT" -p "$QUEUE" --nodes=$NNODES -t $WALLTIME $PV_HOME/start_pvserver.qsub`
 ERRNO=$?
 if [ $ERRNO == 0 ]
 then
@@ -120,6 +125,5 @@ fi
 
 # monitor the batch system and provide
 # a simple UI for probing job status
-JIDNO=`echo $JID | cut -d. -f1`
-JERRF=~/PV-$PV_VER_FULL-$PORT.e$JIDNO
-/usr/common/graphics/ParaView/batchsysmon.sh $JID $JERRF
+JIDNO="${JID//[!0-9]/}"
+/usr/common/graphics/ParaView/batchsysmon.sh $JIDNO slurm-${JIDNO}.out
