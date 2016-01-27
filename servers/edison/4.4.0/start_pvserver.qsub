@@ -1,0 +1,21 @@
+#!/bin/bash
+
+export PATH=$PV_PATH:$PATH
+export LD_LIBRARY_PATH=$PV_LD_LIBRARY_PATH:$LD_LIBRARY_PATH
+export LP_NUM_THREADS=$PV_RENDER_THREADS
+
+echo "Starting ParaView..."
+echo $0
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+echo "PATH=$PATH"
+echo "PV_HOME=$PV_HOME"
+echo "PV_NCAT_PATH=$PV_NCAT_PATH"
+echo "PV_NCPUS=$PV_NCPUS"
+echo "PV_NCPUS_PER_SOCKET=$PV_NCPUS_PER_SOCKET"
+echo "PV_LOGIN_PORT=$PV_LOGIN_PORT"
+echo "PV_RENDER_THREADS=$PV_RENDER_THREADS"
+echo "PV_LOGIN_HOST=$PV_LOGIN_HOST"
+echo "ATP_ENABLED=$ATP_ENABLED"
+
+# start the server
+srun -n $PV_NCPUS -c $PV_CPU_STRIDE  pvserver --reverse-connection --use-offscreen-rendering --server-port=$PV_LOGIN_PORT --client-host=$PV_LOGIN_HOST
