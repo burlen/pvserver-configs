@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -l
 
 if [ $# != 6 ]
 then
@@ -21,9 +21,6 @@ NCPUS_PER_SOCKET=$2
 NCPUS_PER_NODE=`echo 2*$NCPUS_PER_SOCKET | bc`
 NNODES=`echo $NCPUS/$NCPUS_PER_NODE | bc`
 (( NNODES = NNODES<1 ? 1 : $NNODES ))
-CPU_STRIDE=`echo 12/$NCPUS_PER_NODE | bc`
-(( CPU_STRIDE = CPU_STRIDE<1 ? 1 : $CPU_STRIDE ))
-(( CPU_STRIDE = CPU_STRIDE>12 ? 12 : $CPU_STRIDE ))
 MEM=`echo 64*$NNODES | bc`
 WALLTIME=$3
 ACCOUNT=$4
@@ -43,6 +40,12 @@ else
   ACCOUNTS=`/usr/common/usg/bin/getnim -U $USER | cut -d" " -f1 | tr '\n' ' '`
 fi
 QUEUE=$5
+QOS=normal
+if [[ "$QUEUE" == "premium" ]]
+then
+  QUEUE=regular
+  QOS=premium
+fi
 PORT=$6
 LOGIN_HOST=$(cat /etc/hosts | grep $(hostname)'[^-]' | tr -s ' ' | cut -d' ' -f1)
 let LOGIN_PORT=$PORT+1
@@ -61,11 +64,12 @@ GLU_HOME=/usr/common/graphics/glu/9.0.0
 NCAT_HOME=/usr/common/graphics/ParaView/nmap-7.01/
 GCC_HOME=/usr/common/graphics/gcc/5.3.0/
 
-module swap PrgEnv-intel PrgEnv-gnu/5.2.56
-module swap PrgEnv-gnu PrgEnv-gnu/5.2.56
-module load python/2.7.9
+module swap PrgEnv-intel PrgEnv-gnu
+#module swap PrgEnv-intel PrgEnv-gnu/5.2.56
+#module swap PrgEnv-gnu PrgEnv-gnu/5.2.56
+#module load python/2.7.9
 
-PV_LD_LIBRARY_PATH=$PV_HOME/lib:$PV_HOME/lib/paraview-$PV_VER_SHORT:$PV_HOME/lib/system-libs:$MESA_HOME/lib:$GLU_HOME/lib/:/usr/common/usg/python/2.7.9/lib:${GCC_HOME}/lib64:${GCC_HOME}/lib
+#PV_LD_LIBRARY_PATH=$PV_HOME/lib:$PV_HOME/lib/paraview-$PV_VER_SHORT:$PV_HOME/lib/system-libs:$MESA_HOME/lib:$GLU_HOME/lib/:/usr/common/usg/python/2.7.9/lib:${GCC_HOME}/lib64:${GCC_HOME}/lib
 PV_PATH=$PV_HOME/bin
 
 echo '=============================================================='
@@ -86,7 +90,6 @@ echo "ACCOUNT=$ACCOUNT"
 echo "NCPUS=$NCPUS"
 echo "NCPUS_PER_SOCKET=$NCPUS_PER_SOCKET"
 echo "NCPUS_PER_NODE=$NCPUS_PER_NODE"
-echo "CPU_STRIDE=$CPU_STRIDE"
 echo "NNODES=$NNODES"
 echo "MEM=$MEM\GB"
 echo "RENDER_THREADS=$RENDER_THREADS"
@@ -94,6 +97,7 @@ echo "WALLTIME=$WALLTIME"
 echo "PORT=$PORT"
 echo "ACCOUNT=$ACCOUNT"
 echo "QUEUE=$QUEUE"
+echo "QOS=$QOS"
 echo "LOGIN_HOST=$LOGIN_HOST"
 echo "LOGIN_PORT=$LOGIN_PORT"
 echo "LINK_TYPE=hybrid"
@@ -110,12 +114,11 @@ export PV_NCAT_PATH=$NCAT_HOME/bin
 export PV_PORT=$PORT
 export PV_NCPUS=$NCPUS
 export PV_NCPUS_PER_SOCKET=$NCPUS_PER_SOCKET
-export PV_CPU_STRIDE=$CPU_STRIDE
 export PV_RENDER_THREADS=$RENDER_THREADS
 export PV_LOGIN_HOST=$LOGIN_HOST
 export PV_LOGIN_PORT=$LOGIN_PORT
 export ATP_ENABLED=1
-JID=`sbatch -J ParaView-$PV_VER_FULL -A "$ACCOUNT" -p "$QUEUE" --nodes=$NNODES -t $WALLTIME $PV_HOME/start_pvserver.qsub`
+JID=`sbatch -J ParaView-$PV_VER_FULL -A "$ACCOUNT" -p "$QUEUE" --qos=$QOS --nodes=$NNODES -t $WALLTIME $PV_HOME/start_pvserver.qsub`
 ERRNO=$?
 if [ $ERRNO == 0 ]
 then
