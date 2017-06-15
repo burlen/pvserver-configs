@@ -21,7 +21,7 @@ then
   echo
   sleep 1d
 fi
-export NERSC_HOST=cori
+export NERSC_HOST=edison
 
 NCPUS=$1
 NCPUS_PER_SOCKET=$2
@@ -42,7 +42,7 @@ fi
 
 # this is the recommended version to use on NERSC edison
 # when new PV is installed this value needs to be updated
-NERSC_PV_VER=4.4.0
+NERSC_PV_VER=5.3.0
 if [[ "$PV_VER" != "$NERSC_PV_VER" ]]
 then
   echo\
@@ -50,12 +50,12 @@ then
     "version is ParaView ver. $NERSC_PV_VER"
 fi
 
-echo `ls -1 /usr/common/graphics/ParaView/ | grep "[345].[0-9].[0-9]"`
+echo `ls -1 /usr/common/software/ParaView/ | grep "[3456].[0-9].[0-9]"`
 echo `pwd`
 
-if [[ ! (-e /usr/common/graphics/ParaView/$PV_VER/start_pvserver.sh) ]]
+if [[ ! (-e /usr/common/software/ParaView/$PV_VER/start_pvserver.sh) ]]
 then
-  PV_INSTALLS=`ls -1 /usr/common/graphics/ParaView/ | grep "[345].[0-9].[0-9]" | tr '\n' ' '`
+  PV_INSTALLS=`ls -1 /usr/common/software/ParaView/ | grep "[345].[0-9].[0-9]" | tr '\n' ' '`
 
   echo
   echo\
@@ -66,11 +66,11 @@ then
   echo
   echo $PV_INSTALLS
   echo
-  echo "/usr/common/graphics/ParaView/$PV_VER/start_pvserver.sh"
+  echo "/usr/common/software/ParaView/$PV_VER/start_pvserver.sh"
 
   sleep 1d
 fi
 
-/usr/common/graphics/ParaView/$PV_VER/start_pvserver.sh $NCPUS $NCPUS_PER_SOCKET $WALLTIME $ACCOUNT $QUEUE $PORT
+/usr/common/software/ParaView/$PV_VER/start_pvserver.sh $NCPUS $NCPUS_PER_SOCKET $WALLTIME $ACCOUNT $QUEUE $PORT
 echo "Job has exited. Goodbye!"
 sleep 15s
