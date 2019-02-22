@@ -8,6 +8,12 @@
         <Option name="PV_SERVER_PORT" label="tunnel port" save="true">
           <Range type="int" min="1" max="65535" step="1" default="11111"/>
         </Option>
+        <Option name="CPU_ARCH" label="CPU Architecture" save="true">
+          <Enumeration default="haswell">
+            <Entry value="haswell" label="haswell"/>
+            <Entry value="knl" label="knl"/>
+          </Enumeration>
+        </Option>
         <Option name="NCPUS" label="number of processes" save="true">
           <Range type="int" min="1" max="153216" step="1" default="24"/>
         </Option>
@@ -52,12 +58,12 @@
           <Argument value="/usr/common/software/ParaView/start_pvserver.sh"/>
           <Argument value="$NCPUS$"/>
           <Argument value="$NCPUS_PER_SOCKET$"/>
+          <Argument value="$CPU_ARCH$"/>
           <Argument value="$WALLTIME$"/>
           <Argument value="$ACCOUNT$"/>
           <Argument value="$QUEUE$"/>
           <Argument value="$PV_SERVER_PORT$"/>
           <Argument value="$PV_VERSION_FULL$"/>
-          <Argument value="hybrid"/>
         </Arguments>
       </Command>
     </CommandStartup>
